@@ -26,6 +26,20 @@ namespace Dashboard
         private void AddTabs(System.Collections.Generic.Dictionary<string, Portfolio> portfolios)
         {
             tabControl_portfolios.Controls.Clear();
+            DataTable data_source_aggregate_folios = new DataTable();
+            data_source_aggregate_folios.Columns.Add("Portfolio");
+            data_source_aggregate_folios.Columns.Add("Today PnL");
+            data_source_aggregate_folios.Columns.Add("Net");
+            data_source_aggregate_folios.Columns.Add("Long");
+            data_source_aggregate_folios.Columns.Add("Short");
+            
+            data_source_aggregate_folios.Columns.Add("BOD PnL");
+            data_source_aggregate_folios.Columns.Add("Trading PnL");
+            data_source_aggregate_folios.Columns.Add("Div PnL");
+            data_source_aggregate_folios.Columns.Add("YTD PnL");
+            data_source_aggregate_folios.Columns.Add("MTD PnL");
+            data_source_aggregate_folios.Columns.Add("WTD PnL");
+            data_source_aggregate_folios.Rows.Add("TOTAL", null, null, null, null, null, null, null, null, null, null);
 
             int i = 0;
             foreach (var ptf in portfolios)
@@ -40,39 +54,56 @@ namespace Dashboard
                 tab.UseVisualStyleBackColor = true;
                 // data grid
                 DataGridView dataGridView = new DataGridView();
-                
+
+                dataGridView.AllowUserToAddRows = false;
+                dataGridView.AllowUserToDeleteRows = false;
                 dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
                 dataGridView.Location = new System.Drawing.Point(4, 4);
                 dataGridView.Name = "dataGridView";
-                dataGridView.Size = new System.Drawing.Size(907, 317);
+                dataGridView.ReadOnly = true;
+                dataGridView.Size = new System.Drawing.Size(1110, 140);
                 dataGridView.TabIndex = i;
 
                
                 DataTable data_source = new DataTable();
-                data_source.Columns.Add("Security");
-                
-                data_source.Columns.Add("Buy Quantity");
-                data_source.Columns.Add("Buy Average Price");
-
-                data_source.Columns.Add("Sell Quantity");
-                data_source.Columns.Add("Sell Average Price");
-                
-                data_source.Columns.Add("Bid");
-                data_source.Columns.Add("Ask");
+                data_source.Columns.Add("Ticker");
+                data_source.Columns.Add("Delta");
+                data_source.Columns.Add("Today PnL");
+                data_source.Columns.Add("BOD PnL");
+                data_source.Columns.Add("Trading PnL");
+                data_source.Columns.Add("Div PnL");
+                data_source.Columns.Add("Last Price");
+                data_source.Columns.Add("Previous Close");
+                data_source.Columns.Add("Position");
+                data_source.Columns.Add("BOD Position");
+                data_source.Columns.Add("Bought Quantity");
+                data_source.Columns.Add("Average Bought Price");
+                data_source.Columns.Add("Sold Quantity");
+                data_source.Columns.Add("Average Sold Price");
+                data_source.Columns.Add("Multiplier");
+                data_source.Columns.Add("Security Type");
+                data_source.Columns.Add("YTD PnL");
+                data_source.Columns.Add("MTD PnL");
+                data_source.Columns.Add("WTD PnL");
                 foreach (var pos in ptf.Value.Positions)
                 {
                     data_source.Rows.Add(pos.Key,
-                        pos.Value.BuyQuantity,
-                        pos.Value.BuyAveragePrice, 
-                        pos.Value.SellQuantity, 
-                        pos.Value.SellAveragePrice,  
-                        pos.Value.Underlying.Bid, pos.Value.Underlying.Ask);
+                        null, null, null, null, null, pos.Value.Underlying.Last, pos.Value.Underlying.PreviousClose, null, pos.Value.BeginOfDayQuantity,
+                        pos.Value.BoughtQuantity, pos.Value.BoughtAveragePrice, pos.Value.SoldQuantity, pos.Value.SoldAveragePrice, 1,
+                        pos.Value.Underlying is Future ? "FUTURE" : "EQUITY", null, null, null);
+                        
                 }
                 dataGridView.DataSource = data_source;
                 tab.Controls.Add(dataGridView);
                 tabControl_portfolios.Controls.Add(tab);
+
+                data_source_aggregate_folios.Rows.Add(ptf.Key, null, null, null, null, null, null, null, null, null, null);
+               
+                
+
                 i++;
             }
+            dataGridView_Portfolios.DataSource = data_source_aggregate_folios;
         }
         private void UpdatePricesInDataGrids(Security sec)
         {
@@ -85,10 +116,10 @@ namespace Dashboard
                         DataGridView view = (DataGridView)control;
                         foreach(DataGridViewRow row in view.Rows)
                         {
-                            if((string)row.Cells["Security"].Value == sec.Name)
+                            if((string)row.Cells["Ticker"].Value == sec.Name)
                             {
-                                row.Cells["Bid"].Value = sec.Bid;
-                                row.Cells["Ask"].Value = sec.Ask;
+                                row.Cells["Last Price"].Value = sec.Last;
+                                
                             }
                         }
                         this.BindingContext[view.DataSource].EndCurrentEdit();
@@ -111,12 +142,14 @@ namespace Dashboard
                         bool found = false;
                         foreach (DataGridViewRow row in view.Rows)
                         {
-                            if ((string)row.Cells["Security"].Value == pos.Underlying.Name)
+                            if ((string)row.Cells["Ticker"].Value == pos.Underlying.Name)
                             {
-                                row.Cells["Sell Average Price"].Value = pos.SellAveragePrice;
-                                row.Cells["Buy Average Price"].Value = pos.BuyAveragePrice;
-                                row.Cells["Sell Quantity"].Value = pos.SellQuantity;
-                                row.Cells["Buy Quantity"].Value = pos.BuyQuantity;
+                                row.Cells["Average Sold Price"].Value = pos.SoldAveragePrice;
+                                row.Cells["Average Bought Price"].Value = pos.BoughtAveragePrice;
+                                row.Cells["Sold Quantity"].Value = pos.SoldQuantity;
+                                row.Cells["Bought Quantity"].Value = pos.BoughtQuantity;
+
+                                
                                 found = true;
                                 break;
                             }
@@ -125,12 +158,12 @@ namespace Dashboard
                             && (string)tab.Name == pos.PortfolioName)
                         {
                             DataTable data_source = (DataTable)view.DataSource;
+                            
                             data_source.Rows.Add(pos.Underlying.Name,
-                        pos.BuyQuantity,
-                        pos.BuyAveragePrice,
-                        pos.SellQuantity,
-                        pos.SellAveragePrice,
-                        pos.Underlying.Bid, pos.Underlying.Ask);
+                        null, null, null, null, null, pos.Underlying.Last, pos.Underlying.PreviousClose, null, pos.BeginOfDayQuantity,
+                        pos.BoughtQuantity, pos.BoughtAveragePrice, pos.SoldQuantity, pos.SoldAveragePrice, 1,
+                        pos.Underlying is Future ? "FUTURE" : "EQUITY", null, null, null);
+
                             view.DataSource = data_source;
                         }
 
@@ -155,25 +188,29 @@ namespace Dashboard
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.button_start_rt = new System.Windows.Forms.Button();
             this.button_cancel_RT = new System.Windows.Forms.Button();
+            this.dataGridView_Portfolios = new System.Windows.Forms.DataGridView();
+            this.data_source = new System.Data.DataTable();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Portfolios)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.data_source)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.tabControl_portfolios);
-            this.groupBox1.Location = new System.Drawing.Point(31, 93);
+            this.groupBox1.Location = new System.Drawing.Point(12, 257);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(934, 372);
+            this.groupBox1.Size = new System.Drawing.Size(1124, 372);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Portfolios";
             // 
             // tabControl_portfolios
             // 
-            this.tabControl_portfolios.Location = new System.Drawing.Point(18, 20);
+            this.tabControl_portfolios.Location = new System.Drawing.Point(6, 20);
             this.tabControl_portfolios.Name = "tabControl_portfolios";
             this.tabControl_portfolios.SelectedIndex = 0;
-            this.tabControl_portfolios.Size = new System.Drawing.Size(910, 346);
+            this.tabControl_portfolios.Size = new System.Drawing.Size(1112, 346);
             this.tabControl_portfolios.TabIndex = 0;
             // 
             // button_load_books
@@ -196,7 +233,7 @@ namespace Dashboard
             // 
             // button_start_rt
             // 
-            this.button_start_rt.Location = new System.Drawing.Point(335, 28);
+            this.button_start_rt.Location = new System.Drawing.Point(1003, 12);
             this.button_start_rt.Name = "button_start_rt";
             this.button_start_rt.Size = new System.Drawing.Size(108, 23);
             this.button_start_rt.TabIndex = 2;
@@ -206,19 +243,31 @@ namespace Dashboard
             // 
             // button_cancel_RT
             // 
-            this.button_cancel_RT.Location = new System.Drawing.Point(500, 32);
+            this.button_cancel_RT.Location = new System.Drawing.Point(999, 52);
             this.button_cancel_RT.Name = "button_cancel_RT";
             this.button_cancel_RT.Size = new System.Drawing.Size(114, 20);
             this.button_cancel_RT.TabIndex = 3;
-            this.button_cancel_RT.Text = "Cancel RT";
+            this.button_cancel_RT.Text = "Stop RT";
             this.button_cancel_RT.UseVisualStyleBackColor = true;
             this.button_cancel_RT.Click += new System.EventHandler(this.Button_cancel_RT_Click);
+            // 
+            // dataGridView_Portfolios
+            // 
+            this.dataGridView_Portfolios.AllowUserToAddRows = false;
+            this.dataGridView_Portfolios.AllowUserToDeleteRows = false;
+            this.dataGridView_Portfolios.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_Portfolios.Location = new System.Drawing.Point(12, 94);
+            this.dataGridView_Portfolios.Name = "dataGridView_Portfolios";
+            this.dataGridView_Portfolios.ReadOnly = true;
+            this.dataGridView_Portfolios.Size = new System.Drawing.Size(1124, 141);
+            this.dataGridView_Portfolios.TabIndex = 4;
             // 
             // Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(977, 649);
+            this.ClientSize = new System.Drawing.Size(1148, 649);
+            this.Controls.Add(this.dataGridView_Portfolios);
             this.Controls.Add(this.button_cancel_RT);
             this.Controls.Add(this.button_start_rt);
             this.Controls.Add(this.button_load_books);
@@ -226,6 +275,8 @@ namespace Dashboard
             this.Name = "Dashboard";
             this.Text = "Dashboard";
             this.groupBox1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Portfolios)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.data_source)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -238,6 +289,9 @@ namespace Dashboard
         private System.ComponentModel.BackgroundWorker backgroundWorker;
         private Button button_start_rt;
         private Button button_cancel_RT;
+        private DataGridView dataGridView_Portfolios;
+        
+        private DataTable data_source;
     }
 }
 

@@ -27,15 +27,16 @@ namespace Dashboard
                         Underlying = new Security()
                         {
                             Name = "BNP",
-                            Ask = 0.0,
-                            Bid = 0.0,
+                            PreviousClose = 0.0,
+                            Last = 0.0,
                             Sector = "Europe"
                         },
 
-                        BuyAveragePrice = 23.9 + mult * 0.3,
-                        BuyQuantity = 80077 + mult * 30,
-                        SellAveragePrice = 23.8 + mult * 0.21,
-                        SellQuantity = 690008 + mult * 37,
+                        BoughtAveragePrice = 23.9 + mult * 0.3,
+                        BoughtQuantity = 80077 + mult * 30,
+                        SoldAveragePrice = 23.8 + mult * 0.21,
+                        SoldQuantity = 690008 + mult * 37,
+                        BeginOfDayQuantity = 2700
                     };
                     RTUpdatesQueue.Enqueue(updated_pos);
                     if ( mult % 5 == 0)
@@ -45,15 +46,16 @@ namespace Dashboard
                             Underlying = new Security()
                             {
                                 Name = "NEW_" + Convert.ToString(mult),
-                                Ask = 0.0,
-                                Bid = 0.0,
+                                PreviousClose = 0.0,
+                                Last = 0.0,
                                 Sector = "Europe"
                             },
                             PortfolioName = "European0",
-                            BuyAveragePrice = 153.9 + mult * 0.06,
-                            BuyQuantity = 80077 + mult * 30,
-                            SellAveragePrice = 23.8 + mult * 0.21,
-                            SellQuantity = 690008 + mult * 37,
+                            BoughtAveragePrice = 153.9 + mult * 0.06,
+                            BoughtQuantity = 80077 + mult * 30,
+                            SoldAveragePrice = 23.8 + mult * 0.21,
+                            SoldQuantity = 690008 + mult * 37,
+                            BeginOfDayQuantity = 3400
                         };
 
                         RTUpdatesQueue.Enqueue(new_pos);
@@ -74,8 +76,8 @@ namespace Dashboard
                     Security update_ticker = new Security()
                     {
                         Name = "BNP",
-                        Ask = 4.6 + mult*0.23,
-                        Bid = 4.6 + mult * 0.23
+                        PreviousClose = 4.6,
+                        Last = 4.6 + mult * 0.23
                     };
                     RTUpdatesQueue.Enqueue(update_ticker);
                     foreach(var pair in WatchedTickers)
@@ -83,8 +85,8 @@ namespace Dashboard
                         Security update_ticker_new = new Security()
                         {
                             Name = pair.Key,
-                            Ask = 5.6 + mult * 0.23,
-                            Bid = 3.7 + mult * 0.23
+                            PreviousClose = 5.6,
+                            Last = 3.7 + mult * 0.23
                         };
                         RTUpdatesQueue.Enqueue(update_ticker_new);
                     }

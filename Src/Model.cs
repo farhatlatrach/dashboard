@@ -11,17 +11,40 @@ namespace Dashboard
         public string Name{ get; set; }
         public string Sector { get; set; }
         public string Ticker { get; set; }
-        public double  Close { get; set; }
-        public double Bid { get; set; }
-        public double Ask { get; set; }
+        public double  Open { get; set; }
+        public double PreviousClose { get; set; }
+        public double Last { get; set; }
+        public string Currency { get; set; }
+    }
+    public class Future : Security
+    {
+        public double ContractSize { get; set; }
+    }
+    public class Forex
+    {
+        private Forex() { }
+        private readonly string ccy1_;
+        private readonly string ccy2_;
+
+        public Forex(string ccy1, string ccy2)
+        {
+            ccy1_ = ccy1;
+            ccy2_ = ccy2;
+        }
+        public string Name() { return ccy1_ + ccy2_; }
+        public string Inverse() { return ccy2_ + ccy1_; }
+        public double Open { get; set; }
+        public double PreviousClose { get; set; }
+        public double Last { get; set; }
     }
     public class Position 
     {
         public Security Underlying { get; set; }
-        public double SellQuantity { get; set; }
-        public double SellAveragePrice { get; set; }
-        public double BuyQuantity { get; set; }
-        public double BuyAveragePrice { get; set; }
+        public double SoldQuantity { get; set; }
+        public double SoldAveragePrice { get; set; }
+        public double BoughtQuantity { get; set; }
+        public double BoughtAveragePrice { get; set; }
+        public double BeginOfDayQuantity { get; set; }
         public string PortfolioName { get; set; }
     }
     class Portfolio
@@ -71,43 +94,46 @@ namespace Dashboard
                 Underlying = new Security()
                 {
                     Name = "HSBC",
-                    Ask = 4.4,
-                    Bid = 3.9,
+                    PreviousClose = 4.4,
+                    Last = 3.9,
                     Sector = "Europe"
                 },
-                BuyAveragePrice = 3.9,
-                BuyQuantity = 45677,
-                SellAveragePrice = 3.8,
-                SellQuantity = 290008
+                BoughtAveragePrice = 3.9,
+                BoughtQuantity = 45677,
+                SoldAveragePrice = 3.8,
+                SoldQuantity = 290008,
+                BeginOfDayQuantity = 3400
             };
             Position pos2 = new Position()
             {
                 Underlying = new Security()
                 {
                     Name = "HSBC2",
-                    Ask = 40.4,
-                    Bid = 63.9,
+                    PreviousClose = 40.4,
+                    Last = 63.9,
                     Sector = "Europe"
                 },
-                BuyAveragePrice = 39.9,
-                BuyQuantity = 90077,
-                SellAveragePrice = 37.8,
-                SellQuantity = 94448
+                BoughtAveragePrice = 39.9,
+                BoughtQuantity = 90077,
+                SoldAveragePrice = 37.8,
+                SoldQuantity = 94448,
+                BeginOfDayQuantity = 3800
             };
             Position pos3 = new Position()
             {
                 Underlying = new Security()
                 {
                     Name = "BNP",
-                    Ask = 24.4,
-                    Bid = 23.9,
+                    PreviousClose = 24.4,
+                    Last = 23.9,
                     Sector = "Europe"
                 },
                 
-                BuyAveragePrice = 23.9,
-                BuyQuantity = 80077,
-                SellAveragePrice = 23.8,
-                SellQuantity = 690008
+                BoughtAveragePrice = 23.9,
+                BoughtQuantity = 80077,
+                SoldAveragePrice = 23.8,
+                SoldQuantity = 690008,
+                BeginOfDayQuantity = 2400
             };
         
 
