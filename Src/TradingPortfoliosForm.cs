@@ -12,22 +12,28 @@ namespace Dashboard
 {
     public partial class Dashboard : Form
     {
-        private Model model_ = new Model();
-        private DataSource datasource_ = new DataSource();
+        private static int instances = 0;
+       
+        
+        public static int InstancesCount()
+        {
+            return instances;
+        }
         public Dashboard()
         {
             InitializeComponent();
             button_cancel_RT.Enabled = false;
-            button_start_rt.Enabled = false;
-            datasource_.StartRTWatch();
+           
+            DataSource.StartRTWatch();
+            LoadBooks();
+            instances++;
         }
-        private void Button_load_books_Click(object sender, EventArgs e)
+       
+        private void LoadBooks()
         {
-            model_.LoadModel();
-            AddTabs(model_.Portfolios);
-            button_start_rt.Enabled = true;
+           
+            AddTabs(Model.Instance.Portfolios);
         }
-
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             while(false == backgroundWorker.CancellationPending)

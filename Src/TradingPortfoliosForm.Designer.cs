@@ -5,6 +5,7 @@ namespace Dashboard
 {
     partial class Dashboard
     {
+       
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -21,6 +22,7 @@ namespace Dashboard
                 components.Dispose();
             }
             base.Dispose(disposing);
+            instances--;
         }
 
         private void AddTabs(System.Collections.Generic.Dictionary<string, Portfolio> portfolios)
@@ -103,7 +105,7 @@ namespace Dashboard
 
                 i++;
             }
-            dataGridView_Portfolios.DataSource = data_source_aggregate_folios;
+            
         }
         private void UpdatePricesInDataGrids(Security sec)
         {
@@ -184,23 +186,20 @@ namespace Dashboard
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tabControl_portfolios = new System.Windows.Forms.TabControl();
-            this.button_load_books = new System.Windows.Forms.Button();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.button_start_rt = new System.Windows.Forms.Button();
             this.button_cancel_RT = new System.Windows.Forms.Button();
-            this.dataGridView_Portfolios = new System.Windows.Forms.DataGridView();
             this.data_source = new System.Data.DataTable();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Portfolios)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.data_source)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.tabControl_portfolios);
-            this.groupBox1.Location = new System.Drawing.Point(12, 257);
+            this.groupBox1.Location = new System.Drawing.Point(12, 78);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1124, 372);
+            this.groupBox1.Size = new System.Drawing.Size(1124, 551);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Portfolios";
@@ -212,16 +211,6 @@ namespace Dashboard
             this.tabControl_portfolios.SelectedIndex = 0;
             this.tabControl_portfolios.Size = new System.Drawing.Size(1112, 346);
             this.tabControl_portfolios.TabIndex = 0;
-            // 
-            // button_load_books
-            // 
-            this.button_load_books.Location = new System.Drawing.Point(105, 29);
-            this.button_load_books.Name = "button_load_books";
-            this.button_load_books.Size = new System.Drawing.Size(118, 23);
-            this.button_load_books.TabIndex = 1;
-            this.button_load_books.Text = "Load books";
-            this.button_load_books.UseVisualStyleBackColor = true;
-            this.button_load_books.Click += new System.EventHandler(this.Button_load_books_Click);
             // 
             // backgroundWorker
             // 
@@ -251,31 +240,17 @@ namespace Dashboard
             this.button_cancel_RT.UseVisualStyleBackColor = true;
             this.button_cancel_RT.Click += new System.EventHandler(this.Button_cancel_RT_Click);
             // 
-            // dataGridView_Portfolios
-            // 
-            this.dataGridView_Portfolios.AllowUserToAddRows = false;
-            this.dataGridView_Portfolios.AllowUserToDeleteRows = false;
-            this.dataGridView_Portfolios.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView_Portfolios.Location = new System.Drawing.Point(12, 94);
-            this.dataGridView_Portfolios.Name = "dataGridView_Portfolios";
-            this.dataGridView_Portfolios.ReadOnly = true;
-            this.dataGridView_Portfolios.Size = new System.Drawing.Size(1124, 141);
-            this.dataGridView_Portfolios.TabIndex = 4;
-            // 
             // Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1148, 649);
-            this.Controls.Add(this.dataGridView_Portfolios);
+            this.ClientSize = new System.Drawing.Size(1245, 649);
             this.Controls.Add(this.button_cancel_RT);
             this.Controls.Add(this.button_start_rt);
-            this.Controls.Add(this.button_load_books);
             this.Controls.Add(this.groupBox1);
             this.Name = "Dashboard";
             this.Text = "Dashboard";
             this.groupBox1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Portfolios)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.data_source)).EndInit();
             this.ResumeLayout(false);
 
@@ -284,12 +259,10 @@ namespace Dashboard
         #endregion
 
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button button_load_books;
         private System.Windows.Forms.TabControl tabControl_portfolios;
         private System.ComponentModel.BackgroundWorker backgroundWorker;
         private Button button_start_rt;
         private Button button_cancel_RT;
-        private DataGridView dataGridView_Portfolios;
         
         private DataTable data_source;
     }

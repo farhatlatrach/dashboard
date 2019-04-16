@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 namespace Dashboard
 {
-    class DataSource
+    public class DataSource
     {
 
         public static ConcurrentQueue<Object> RTUpdatesQueue = new ConcurrentQueue<Object>();
         
         public static ConcurrentDictionary<string,byte> WatchedTickers = new ConcurrentDictionary<string, byte>();//a way to get a concurrent set (no duplicates)
 
-        public void StartRTWatch()
+        public static void StartRTWatch()
         {
             // watch OMS
             Action watch_oms = () =>

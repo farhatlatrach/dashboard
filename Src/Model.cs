@@ -47,7 +47,7 @@ namespace Dashboard
         public double BeginOfDayQuantity { get; set; }
         public string PortfolioName { get; set; }
     }
-    class Portfolio
+    public class Portfolio
     {
         private Dictionary<string, Position> positions_ = new Dictionary<string, Position>();
         public string Name { get; set; }
@@ -63,24 +63,32 @@ namespace Dashboard
             }
         }
     }
-    class Model
+    public sealed class Model
     {
-        private Dictionary<string, Portfolio> portfolios_ = new Dictionary<string, Portfolio>();
-        public Dictionary<string, Portfolio> Portfolios
+        private Model()
+        {
+            LoadModel();
+
+        }
+        static Model()
+        {
+            
+
+        }
+
+        private static readonly Model instance = new Model();
+        public static Model Instance
         {
             get
             {
-                return portfolios_;
-            }
-            set
-            {
-                portfolios_ = value;
+                return instance;
             }
         }
-        
-        public void LoadModel()
+        public Dictionary<string, Portfolio> Portfolios { get; set; }= new Dictionary<string, Portfolio>();
+
+        private void LoadModel()
         {
-            portfolios_.Clear();
+            Portfolios.Clear();
 
             // testings..
 
@@ -148,10 +156,10 @@ namespace Dashboard
             ptf3.Positions.Add(pos2.Underlying.Name, pos2);
             ptf3.Positions.Add(pos3.Underlying.Name, pos3);
 
-            portfolios_.Add(ptf0.Name, ptf0);
-            portfolios_.Add(ptf1.Name, ptf1);
-            portfolios_.Add(ptf2.Name, ptf2);
-            portfolios_.Add(ptf3.Name, ptf3);
+            Portfolios.Add(ptf0.Name, ptf0);
+            Portfolios.Add(ptf1.Name, ptf1);
+            Portfolios.Add(ptf2.Name, ptf2);
+            Portfolios.Add(ptf3.Name, ptf3);
             
           
         }

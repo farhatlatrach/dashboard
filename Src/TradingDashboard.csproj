@@ -46,19 +46,37 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DashboardUI.cs">
+    <Compile Include="TradingPortfoliosForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DashboardUI.Designer.cs">
-      <DependentUpon>DashboardUI.cs</DependentUpon>
+    <Compile Include="TradingPortfoliosForm.Designer.cs">
+      <DependentUpon>TradingPortfoliosForm.cs</DependentUpon>
     </Compile>
     <Compile Include="DataSource.cs" />
+    <Compile Include="TradingDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TradingDashboard.Designer.cs">
+      <DependentUpon>TradingDashboard.cs</DependentUpon>
+    </Compile>
     <Compile Include="Model.cs" />
+    <Compile Include="RiskAnalyticsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RiskAnalyticsForm.Designer.cs">
+      <DependentUpon>RiskAnalyticsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="DashboardUI.resx">
-      <DependentUpon>DashboardUI.cs</DependentUpon>
+    <EmbeddedResource Include="TradingPortfoliosForm.resx">
+      <DependentUpon>TradingPortfoliosForm.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TradingDashboard.resx">
+      <DependentUpon>TradingDashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RiskAnalyticsForm.resx">
+      <DependentUpon>RiskAnalyticsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
