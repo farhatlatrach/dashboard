@@ -28,7 +28,7 @@ namespace Dashboard
         private void AddTabs(System.Collections.Generic.Dictionary<string, Portfolio> portfolios)
         {
             tabControl_portfolios.Controls.Clear();
-            DataTable data_source_aggregate_folios = new DataTable();
+            /*DataTable data_source_aggregate_folios = new DataTable();
             data_source_aggregate_folios.Columns.Add("Portfolio");
             data_source_aggregate_folios.Columns.Add("Today PnL");
             data_source_aggregate_folios.Columns.Add("Net");
@@ -41,7 +41,7 @@ namespace Dashboard
             data_source_aggregate_folios.Columns.Add("YTD PnL");
             data_source_aggregate_folios.Columns.Add("MTD PnL");
             data_source_aggregate_folios.Columns.Add("WTD PnL");
-            data_source_aggregate_folios.Rows.Add("TOTAL", null, null, null, null, null, null, null, null, null, null);
+            data_source_aggregate_folios.Rows.Add("TOTAL", null, null, null, null, null, null, null, null, null, null);*/
 
             int i = 0;
             foreach (var ptf in portfolios)
@@ -66,16 +66,22 @@ namespace Dashboard
                 dataGridView.Size = new System.Drawing.Size(1110, 140);
                 dataGridView.TabIndex = i;
 
-               
+                // Create third column.
+                DataColumn deltaColumn = new DataColumn();
+                deltaColumn.DataType = System.Type.GetType("System.Decimal");
+                deltaColumn.ColumnName = "Delta";
+                deltaColumn.Expression = "LastPrice - PreviousClose"; //the delta column is function of last and previous close; just to test
+
                 DataTable data_source = new DataTable();
                 data_source.Columns.Add("Ticker");
-                data_source.Columns.Add("Delta");
+                
                 data_source.Columns.Add("Today PnL");
                 data_source.Columns.Add("BOD PnL");
                 data_source.Columns.Add("Trading PnL");
                 data_source.Columns.Add("Div PnL");
-                data_source.Columns.Add("Last Price");
-                data_source.Columns.Add("Previous Close");
+                data_source.Columns.Add(new DataColumn("LastPrice", System.Type.GetType("System.Decimal")));
+                data_source.Columns.Add(new DataColumn("PreviousClose", System.Type.GetType("System.Decimal")));
+                data_source.Columns.Add(deltaColumn);
                 data_source.Columns.Add("Position");
                 data_source.Columns.Add("BOD Position");
                 data_source.Columns.Add("Bought Quantity");
@@ -99,7 +105,7 @@ namespace Dashboard
                 tab.Controls.Add(dataGridView);
                 tabControl_portfolios.Controls.Add(tab);
 
-                data_source_aggregate_folios.Rows.Add(ptf.Key, null, null, null, null, null, null, null, null, null, null);
+                //data_source_aggregate_folios.Rows.Add(ptf.Key, null, null, null, null, null, null, null, null, null, null);
                
                 
 
@@ -120,7 +126,7 @@ namespace Dashboard
                         {
                             if((string)row.Cells["Ticker"].Value == sec.Name)
                             {
-                                row.Cells["Last Price"].Value = sec.Last;
+                                row.Cells["LastPrice"].Value = sec.Last;
                                 
                             }
                         }

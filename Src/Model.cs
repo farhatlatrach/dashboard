@@ -20,6 +20,10 @@ namespace Dashboard
     {
         public double ContractSize { get; set; }
     }
+    public class Equity : Security
+    {
+       
+    }
     public class Forex
     {
         private Forex() { }
@@ -46,6 +50,16 @@ namespace Dashboard
         public double BoughtAveragePrice { get; set; }
         public double BeginOfDayQuantity { get; set; }
         public string PortfolioName { get; set; }
+    }
+    public class Trade
+    {
+        public double UnitPrice { get; set; }
+
+        // - sign for sell / + sign for Buy
+        public double Quantity { get; set; }
+        public string PortfolioName { get; set; }
+        public string SecurityName { get; set; }
+        public string TraderName { get; set; } = "Mahmoud Elarbi";
     }
     public class Portfolio
     {

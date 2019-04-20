@@ -18,7 +18,7 @@ namespace Dashboard
             // watch OMS
             Action watch_oms = () =>
             {
-                // some how pull oms system and enqueue into OMSUpdates
+                // somehow pull oms system and enqueue into OMSUpdates
                 int mult = 1;
                 while (true)
                 {
