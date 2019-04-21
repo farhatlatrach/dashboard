@@ -13,7 +13,7 @@ namespace Dashboard
     public partial class TradingDashboard : Form
     {
        
-        private Dashboard portfolios_form;
+        private PortfoliosForm portfolios_form;
         private RiskAnalyticsForm risk_analytics_form;
 
         public TradingDashboard()
@@ -23,9 +23,9 @@ namespace Dashboard
 
         private void ShowPortfoliosForm(object sender, EventArgs e)
         {
-            if (Dashboard.InstancesCount() < 1)
+            if (PortfoliosForm.InstancesCount() < 1)
             {
-                portfolios_form = new Dashboard();
+                portfolios_form = new PortfoliosForm();
                 portfolios_form.MdiParent = this;
                 portfolios_form.Text = "Portfolios";
                 portfolios_form.Show();

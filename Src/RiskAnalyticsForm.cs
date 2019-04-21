@@ -23,5 +23,16 @@ namespace Dashboard
             CreatGridView(Model.Instance.Portfolios);
             instances++;
         }
+
+        private void Config_columns_Click(object sender, EventArgs e)
+        {
+         
+                ConfigColumnsForm config_form = new ConfigColumnsForm(dataGridView_Portfolios.Columns);
+                // portfolios_form.MdiParent = this;
+                config_form.Text = "Configuration";
+                config_form.ShowDialog(this);
+               
+            
+        }
     }
 }

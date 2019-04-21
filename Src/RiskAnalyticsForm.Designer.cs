@@ -60,6 +60,7 @@ namespace Dashboard
         private void InitializeComponent()
         {
             this.dataGridView_Portfolios = new System.Windows.Forms.DataGridView();
+            this.config_columns = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Portfolios)).BeginInit();
             this.SuspendLayout();
             // 
@@ -68,17 +69,28 @@ namespace Dashboard
             this.dataGridView_Portfolios.AllowUserToAddRows = false;
             this.dataGridView_Portfolios.AllowUserToDeleteRows = false;
             this.dataGridView_Portfolios.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView_Portfolios.Location = new System.Drawing.Point(12, 12);
+            this.dataGridView_Portfolios.Location = new System.Drawing.Point(12, 36);
             this.dataGridView_Portfolios.Name = "dataGridView_Portfolios";
             this.dataGridView_Portfolios.ReadOnly = true;
-            this.dataGridView_Portfolios.Size = new System.Drawing.Size(1166, 311);
+            this.dataGridView_Portfolios.Size = new System.Drawing.Size(1166, 287);
             this.dataGridView_Portfolios.TabIndex = 5;
+            // 
+            // config_columns
+            // 
+            this.config_columns.Location = new System.Drawing.Point(489, 9);
+            this.config_columns.Name = "config_columns";
+            this.config_columns.Size = new System.Drawing.Size(93, 23);
+            this.config_columns.TabIndex = 6;
+            this.config_columns.Text = "config. columns";
+            this.config_columns.UseVisualStyleBackColor = true;
+            this.config_columns.Click += new System.EventHandler(this.Config_columns_Click);
             // 
             // RiskAnalyticsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1190, 333);
+            this.Controls.Add(this.config_columns);
             this.Controls.Add(this.dataGridView_Portfolios);
             this.Name = "RiskAnalyticsForm";
             this.Text = "Risk Analytics";
@@ -90,5 +102,6 @@ namespace Dashboard
         #endregion
 
         private System.Windows.Forms.DataGridView dataGridView_Portfolios;
+        private Button config_columns;
     }
 }
