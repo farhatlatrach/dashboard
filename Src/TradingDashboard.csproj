@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Bloomberglp.Blpapi">
+      <HintPath>..\reference\Bloomberglp.Blpapi.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -52,6 +55,7 @@
     <Compile Include="ConfigColumnsForm.Designer.cs">
       <DependentUpon>ConfigColumnsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MktDataService.cs" />
     <Compile Include="TradingPortfoliosForm.cs">
       <SubType>Form</SubType>
     </Compile>

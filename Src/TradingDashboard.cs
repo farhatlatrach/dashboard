@@ -15,10 +15,16 @@ namespace Dashboard
        
         private PortfoliosForm portfolios_form;
         private RiskAnalyticsForm risk_analytics_form;
+        private MktDataService mktDataService;
 
         public TradingDashboard()
         {
             InitializeComponent();
+            // creer une instance de MktDataSubscription
+            // run it
+
+            MktDataService.startBloomberg();
+
         }
 
         private void ShowPortfoliosForm(object sender, EventArgs e)

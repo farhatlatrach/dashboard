@@ -11,18 +11,23 @@ namespace Dashboard
         public string Name{ get; set; }
         public string Sector { get; set; }
         public string Ticker { get; set; }
+        public string Country { get; set; }
+
         public double  Open { get; set; }
         public double PreviousClose { get; set; }
         public double Last { get; set; }
         public string Currency { get; set; }
+        public long ID { get; set; }
+        
     }
     public class Future : Security
     {
         public double ContractSize { get; set; }
+        public bool isFuture = true;
     }
     public class Equity : Security
     {
-       
+        public bool isFuture = false;
     }
     public class Forex
     {
@@ -79,6 +84,10 @@ namespace Dashboard
     }
     public sealed class Model
     {
+        public Dictionary<string, Portfolio> Portfolios { get; set; } = new Dictionary<string, Portfolio>();
+
+        public Dictionary<long, Security> Securities { get; set; } = new Dictionary<long, Security>();
+
         private Model()
         {
             LoadModel();
@@ -90,6 +99,22 @@ namespace Dashboard
 
         }
 
+        public List<String> getSecurities()
+        {
+            // for each 
+            List<string> myTickers = new List<string>();
+
+            foreach (var ptflIter in Portfolios)
+            {
+                foreach (var posIter in ptflIter.Value.Positions) {
+                    myTickers.Add(posIter.Value.Underlying.Name);
+                }
+            }
+
+            return myTickers;
+        }
+        
+
         private static readonly Model instance = new Model();
         public static Model Instance
         {
@@ -98,7 +123,6 @@ namespace Dashboard
                 return instance;
             }
         }
-        public Dictionary<string, Portfolio> Portfolios { get; set; }= new Dictionary<string, Portfolio>();
 
         private void LoadModel()
         {
@@ -115,7 +139,7 @@ namespace Dashboard
             {
                 Underlying = new Security()
                 {
-                    Name = "HSBC",
+                    Name = "HSBC LN EQUITY",
                     PreviousClose = 4.4,
                     Last = 3.9,
                     Sector = "Europe"
@@ -130,7 +154,7 @@ namespace Dashboard
             {
                 Underlying = new Security()
                 {
-                    Name = "HSBC2",
+                    Name = "VOD LN EQUITY",
                     PreviousClose = 40.4,
                     Last = 63.9,
                     Sector = "Europe"
@@ -145,7 +169,7 @@ namespace Dashboard
             {
                 Underlying = new Security()
                 {
-                    Name = "BNP",
+                    Name = "BNP FP EQUITY",
                     PreviousClose = 24.4,
                     Last = 23.9,
                     Sector = "Europe"
