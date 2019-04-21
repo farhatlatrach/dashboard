@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace Dashboard
 {
-    partial class Dashboard
+    partial class PortfoliosForm
     {
        
         /// <summary>
@@ -196,6 +196,7 @@ namespace Dashboard
             this.button_start_rt = new System.Windows.Forms.Button();
             this.button_cancel_RT = new System.Windows.Forms.Button();
             this.data_source = new System.Data.DataTable();
+            this.config_columns = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.data_source)).BeginInit();
             this.SuspendLayout();
@@ -246,11 +247,22 @@ namespace Dashboard
             this.button_cancel_RT.UseVisualStyleBackColor = true;
             this.button_cancel_RT.Click += new System.EventHandler(this.Button_cancel_RT_Click);
             // 
+            // config_columns
+            // 
+            this.config_columns.Location = new System.Drawing.Point(361, 33);
+            this.config_columns.Name = "config_columns";
+            this.config_columns.Size = new System.Drawing.Size(90, 19);
+            this.config_columns.TabIndex = 4;
+            this.config_columns.Text = "config. columns";
+            this.config_columns.UseVisualStyleBackColor = true;
+            this.config_columns.Click += new System.EventHandler(this.Config_columns_Click);
+            // 
             // Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1245, 649);
+            this.Controls.Add(this.config_columns);
             this.Controls.Add(this.button_cancel_RT);
             this.Controls.Add(this.button_start_rt);
             this.Controls.Add(this.groupBox1);
@@ -271,6 +283,7 @@ namespace Dashboard
         private Button button_cancel_RT;
         
         private DataTable data_source;
+        private Button config_columns;
     }
 }
 

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace Dashboard
 {
-    public partial class Dashboard : Form
+    public partial class PortfoliosForm : Form
     {
         private static int instances = 0;
        
@@ -19,7 +19,7 @@ namespace Dashboard
         {
             return instances;
         }
-        public Dashboard()
+        public PortfoliosForm()
         {
             InitializeComponent();
             button_cancel_RT.Enabled = false;
@@ -89,6 +89,21 @@ namespace Dashboard
             button_start_rt.Enabled = true;
         }
 
-        
+        private void Config_columns_Click(object sender, EventArgs e)
+        {
+            TabPage tab = tabControl_portfolios.SelectedTab;
+            foreach (Control control in tab.Controls)
+            {
+                if (control.Name == "dataGridView")
+                {
+                    DataGridView view = (DataGridView)control;
+                  
+                    ConfigColumnsForm config_form = new ConfigColumnsForm(view.Columns);
+                   // portfolios_form.MdiParent = this;
+                    config_form.Text = "Configuration";
+                    config_form.ShowDialog(this);
+                }
+            }
+        }
     }
 }
