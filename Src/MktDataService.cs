@@ -16,11 +16,13 @@ using Thread = System.Threading.Thread;
 using System.Collections.Generic;
 using System.IO;
 using System;
-
+using log4net;
 namespace Dashboard
 {
     class MktDataService
     {
+        private static readonly ILog Log =
+               LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private const string MKTDATA_SVC = "//blp/mktdata";
         private const string AUTH_SVC = "//blp/apiauth";
 
@@ -91,7 +93,7 @@ namespace Dashboard
             SessionOptions options = new SessionOptions();
 
             d_session = new Session(options, processEvent);
-            System.Console.WriteLine("Starting session...");
+            Log.Info("Starting session...");
             return d_session.Start();
         }
 
@@ -119,11 +121,12 @@ namespace Dashboard
 
             d_session.Subscribe(d_subscriptions);
             d_isSubscribed = true;
+            Log.Info("subscribed");
         }
 
         public static void startBloomberg()
         {
-            
+            Log.Info("starting bloomberg");
             //   start bloomberg connection
             MktDataService mktDataService = new MktDataService();
             mktDataService.run();
@@ -137,7 +140,8 @@ namespace Dashboard
             // create session
             if (!createSession())
             {
-  //              System.Console.WriteLine("Fail to open session");
+                //              Log.Info("Fail to open session");
+                Log.Info("Fail to open session");
                 return;
             }
 
@@ -145,27 +149,19 @@ namespace Dashboard
 
             if (!d_session.OpenService(MKTDATA_SVC))
             {
-//                System.Console.Error.WriteLine("Failed to open " + MKTDATA_SVC);
+                Log.Error("Failed to open " + MKTDATA_SVC);
                 d_session.Stop();
                 return;
             }
 
-//            System.Console.WriteLine("Subscribing...");
+Log.Info("Subscribing...");
             subscribe();
 
-            // wait for enter key to exit application
-//            System.Console.Read();
-
-            lock (d_lock)
-            {
-                d_isStopped = true;
-            }
-            d_session.Stop();
-//            System.Console.WriteLine("Exiting.");
         }
 
         public void processEvent(Event eventObj, Session session)
         {
+            Log.Info("got an event:");
             try
             {
                 switch (eventObj.Type)
@@ -190,21 +186,21 @@ namespace Dashboard
             }
             catch (System.Exception e)
             {
-                System.Console.WriteLine(e.ToString());
+                Log.Info(e.ToString());
             }
         }
 
         private void processSubscriptionStatus(Event eventObj, Session session)
         {
-            System.Console.WriteLine("Processing SUBSCRIPTION_STATUS");
+            Log.Info("Processing SUBSCRIPTION_STATUS");
             List<Subscription> subscriptionList = null;
             foreach (Message msg in eventObj)
             {
                 CorrelationID cid = msg.CorrelationID;
                 string topic = d_topics[(int)cid.Value - 1];
-                System.Console.WriteLine(System.DateTime.Now.ToString("s") +
+                Log.Info(System.DateTime.Now.ToString("s") +
                     ": " + topic + " - " + msg.MessageType);
-                System.Console.WriteLine(msg);
+                Log.Info(msg);
 
                 if (msg.MessageType == SUBSCRIPTION_TERMINATED
                             && d_pendingUnsubscribe.Remove(cid))
@@ -213,7 +209,7 @@ namespace Dashboard
                     Subscription subscription = getSubscription(cid);
                     if (d_isSlow)
                     {
-                        System.Console.WriteLine("Deferring subscription for topic = {0} because session is slow.", topic);
+                        Log.Info(String.Format("Deferring subscription for topic = {0} because session is slow.", topic));
                         d_pendingSubscriptions.Add(subscription);
                     }
                     else
@@ -235,7 +231,7 @@ namespace Dashboard
 
         private void processSubscriptionDataEvent(Event eventObj, Session session)
         {
-            //            System.Console.WriteLine("Processing SUBSCRIPTION_DATA");
+            //            Log.Info("Processing SUBSCRIPTION_DATA");
             foreach (Message msg in eventObj)
             {
                 long lCID = (long)msg.CorrelationID.Value;
@@ -266,7 +262,7 @@ namespace Dashboard
                         {
                             if (field.IsNull)
                             {
-                                System.Console.WriteLine("\t\t" + field.Name + " is NULL");
+                                Log.Info("\t\t" + field.Name + " is NULL");
                                 continue;
                             }
 
@@ -278,14 +274,14 @@ namespace Dashboard
                         }*/
 
 
-        //                System.Console.WriteLine("");
+        //                Log.Info("");
 
 
         private void processElement(Element element)
         {
             if (element.IsArray)
             {
-                System.Console.WriteLine("\t\t" + element.Name);
+                Log.Info("\t\t" + element.Name);
                 // process array
                 int numOfValues = element.NumValues;
                 for (int i = 0; i < numOfValues; ++i)
@@ -296,7 +292,7 @@ namespace Dashboard
             }
             else if (element.NumElements > 0)
             {
-                System.Console.WriteLine("\t\t" + element.Name);
+                Log.Info("\t\t" + element.Name);
                 int numOfElements = element.NumElements;
                 for (int i = 0; i < numOfElements; ++i)
                 {
@@ -311,7 +307,7 @@ namespace Dashboard
 
 
 
-                System.Console.WriteLine("\t\t" + element.Name
+                Log.Info("\t\t" + element.Name
                     + " = " + element.GetValueAsString());
             }
         }
@@ -320,7 +316,7 @@ namespace Dashboard
 
         private void processAdminEvent(Event eventObj, Session session)
         {
-            System.Console.WriteLine("Processing ADMIN");
+            Log.Info("Processing ADMIN");
             List<CorrelationID> cidsToCancel = null;
             bool previouslySlow = d_isSlow;
             foreach (Message msg in eventObj)
@@ -328,22 +324,22 @@ namespace Dashboard
                 // An admin event can have more than one messages.
                 if (msg.MessageType == SLOW_CONSUMER_WARNING)
                 {
-                    System.Console.WriteLine(msg);
+                    Log.Info(msg);
                     d_isSlow = true;
                 }
                 else if (msg.MessageType == SLOW_CONSUMER_WARNING_CLEARED)
                 {
-                    System.Console.WriteLine(msg);
+                    Log.Info(msg);
                     d_isSlow = false;
                 }
                 else if (msg.MessageType == DATA_LOSS)
                 {
                     CorrelationID cid = msg.CorrelationID;
                     string topic = d_topics[(int)cid.Value - 1];
-                    System.Console.WriteLine("{0}: {1}",
+                    Log.Info(String.Format("{0}: {1}",
                                              System.DateTime.Now.ToString("s"),
-                                             topic);
-                    System.Console.WriteLine(msg);
+                                             topic));
+                    Log.Info(msg);
                     if (msg.HasElement(SOURCE))
                     {
                         string sourceStr = msg.GetElementAsString(SOURCE);
@@ -374,8 +370,8 @@ namespace Dashboard
                 {
                     // Session was slow but is no longer slow. subscribe to any topics
                     // for which we have previously received SUBSCRIPTION_TERMINATED
-                    System.Console.WriteLine("Subscribing to topics - {0}",
-                                                                    getTopicsString(d_pendingSubscriptions));
+                    Log.Info(String.Format("Subscribing to topics - {0}",
+                                                                    getTopicsString(d_pendingSubscriptions)));
                     session.Subscribe(d_pendingSubscriptions);
                     d_pendingSubscriptions.Clear();
                 }
@@ -384,10 +380,10 @@ namespace Dashboard
 
         private void processMiscEvents(Event eventObj, Session session)
         {
-            System.Console.WriteLine("Processing " + eventObj.Type);
+            Log.Info("Processing " + eventObj.Type);
             foreach (Message msg in eventObj)
             {
-                System.Console.WriteLine(System.DateTime.Now.ToString("s") +
+                Log.Info(System.DateTime.Now.ToString("s") +
                     ": " + msg.MessageType + "\n");
             }
         }
@@ -428,7 +424,7 @@ namespace Dashboard
                 String loggerName,
                 String message)
             {
-                System.Console.WriteLine(dateTime + "  " + loggerName
+                Log.Info(dateTime + "  " + loggerName
                     + " [" + level.ToString() + "] Thread ID = "
                     + threadId + " " + message);
             }

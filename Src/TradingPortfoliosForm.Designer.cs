@@ -24,25 +24,19 @@ namespace Dashboard
             base.Dispose(disposing);
             instances--;
         }
+        private DataColumn new_datacolumn(string name, System.Type type, string expression)
+        {
+            DataColumn data_column = new DataColumn();
+            data_column.DataType = type;
+            data_column.ColumnName = name;
+            data_column.Expression = expression;
 
+            return data_column;
+        }
         private void AddTabs(System.Collections.Generic.Dictionary<string, Portfolio> portfolios)
         {
             tabControl_portfolios.Controls.Clear();
-            /*DataTable data_source_aggregate_folios = new DataTable();
-            data_source_aggregate_folios.Columns.Add("Portfolio");
-            data_source_aggregate_folios.Columns.Add("Today PnL");
-            data_source_aggregate_folios.Columns.Add("Net");
-            data_source_aggregate_folios.Columns.Add("Long");
-            data_source_aggregate_folios.Columns.Add("Short");
-            
-            data_source_aggregate_folios.Columns.Add("BOD PnL");
-            data_source_aggregate_folios.Columns.Add("Trading PnL");
-            data_source_aggregate_folios.Columns.Add("Div PnL");
-            data_source_aggregate_folios.Columns.Add("YTD PnL");
-            data_source_aggregate_folios.Columns.Add("MTD PnL");
-            data_source_aggregate_folios.Columns.Add("WTD PnL");
-            data_source_aggregate_folios.Rows.Add("TOTAL", null, null, null, null, null, null, null, null, null, null);*/
-
+          
             int i = 0;
             foreach (var ptf in portfolios)
             {
@@ -104,10 +98,6 @@ namespace Dashboard
                 dataGridView.DataSource = data_source;
                 tab.Controls.Add(dataGridView);
                 tabControl_portfolios.Controls.Add(tab);
-
-                //data_source_aggregate_folios.Rows.Add(ptf.Key, null, null, null, null, null, null, null, null, null, null);
-               
-                
 
                 i++;
             }
