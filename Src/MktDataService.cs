@@ -107,6 +107,13 @@ namespace Dashboard
             fieldList.Add("MKTDATA_EVENT_TYPE");
             fieldList.Add("MKTDATA_EVENT_SUBTYPE");
             fieldList.Add("IS_DELAYED_STREAM");
+            
+            if(d_securities.Count == 0)
+            {
+                Log.Info("Empty securities list - no subscriptions");
+
+                return;
+            }
 
             long cid = 1;
             foreach (var secIter in d_securities)
