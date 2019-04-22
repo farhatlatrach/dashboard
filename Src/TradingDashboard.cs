@@ -15,7 +15,6 @@ namespace Dashboard
        
         private PortfoliosForm portfolios_form;
         private RiskAnalyticsForm risk_analytics_form;
-        private MktDataService mktDataService;
 
         public TradingDashboard()
         {

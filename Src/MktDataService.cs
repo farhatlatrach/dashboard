@@ -26,6 +26,8 @@ namespace Dashboard
         private const string MKTDATA_SVC = "//blp/mktdata";
         private const string AUTH_SVC = "//blp/apiauth";
 
+        private const string LAST_PRICE = "LAST_PRICE";
+
         private static readonly Name SLOW_CONSUMER_WARNING = Name.GetName("SlowConsumerWarning");
         private static readonly Name SLOW_CONSUMER_WARNING_CLEARED =
                                                                Name.GetName("SlowConsumerWarningCleared");
@@ -82,6 +84,16 @@ namespace Dashboard
 
         }
 
+        public void Stop()
+        {
+            if (d_subscriptions != null && d_isSubscribed)
+            {
+                d_session.Unsubscribe(d_subscriptions);
+            Log.Info("Subscription stopped.");
+            }
+            d_isSubscribed = false;
+        }
+
         private bool createSession()
         {
             if (d_session != null) d_session.Stop();
@@ -98,12 +110,35 @@ namespace Dashboard
         }
 
 
+        private void addNewSubscription(string sTicker)
+        {
+            List<string> subscriptionOptions = new List<string>();
+            List<string> fieldList = new List<string>();
+            fieldList.Add(LAST_PRICE);
+            fieldList.Add("MKTDATA_EVENT_TYPE");
+            fieldList.Add("MKTDATA_EVENT_SUBTYPE");
+            fieldList.Add("IS_DELAYED_STREAM");
+
+            if (!d_securities.Contains(sTicker)) {
+                int cid = d_securities.Count + 1;
+                subscriptionOptions.Add("interval = 5.0"); // throttle updates every 5 seconds                
+                d_topics.Add(sTicker);
+                d_subscriptions.Add(new Subscription(sTicker, fieldList, subscriptionOptions, new CorrelationID(cid)));
+                d_mapCIDtoTickers.Add(cid, sTicker);
+
+                d_session.Resubscribe(d_subscriptions);
+                d_isSubscribed = true;
+                Log.Info("resubscribed... ");
+
+            }
+
+        }
 
         private void subscribe()
         {
             List<string> subscriptionOptions = new List<string>();
             List<string> fieldList = new List<string>();
-            fieldList.Add("LAST_PRICE");
+            fieldList.Add(LAST_PRICE);
             fieldList.Add("MKTDATA_EVENT_TYPE");
             fieldList.Add("MKTDATA_EVENT_SUBTYPE");
             fieldList.Add("IS_DELAYED_STREAM");
@@ -161,7 +196,7 @@ namespace Dashboard
                 return;
             }
 
-Log.Info("Subscribing...");
+            Log.Info("Subscribing...");
             subscribe();
 
         }
@@ -248,14 +283,14 @@ Log.Info("Subscribing...");
 
                 if (d_mapCIDtoTickers.TryGetValue(lCID, out sec))
                 {
-                    if (msg.HasElement("LAST_PRICE"))
+                    if (msg.HasElement(LAST_PRICE))
                     {
-                        if (!msg.GetElement("LAST_PRICE").IsNull)
+                        if (!msg.GetElement(LAST_PRICE).IsNull)
                         {
                             Security updated_sec = new Security()
                             {
                                 Name = sec,
-                                Last = msg.GetElement("LAST_PRIC").GetValueAsFloat64()
+                                Last = msg.GetElement(LAST_PRICE).GetValueAsFloat64()
                             };
 
                             DataSource.RTUpdatesQueue.Enqueue(updated_sec);

@@ -187,7 +187,7 @@ namespace Dashboard
             {
                 Underlying = new Security()
                 {
-                    Name = "HSBC LN EQUITY",
+                    Name = "IBM US EQUITY",
                     PreviousClose = 4.4,
                     Last = 3.9,
                     Sector = "Europe"
@@ -202,7 +202,7 @@ namespace Dashboard
             {
                 Underlying = new Security()
                 {
-                    Name = "VOD LN EQUITY",
+                    Name = "MSFT US EQUITY",
                     PreviousClose = 40.4,
                     Last = 63.9,
                     Sector = "Europe"
@@ -217,7 +217,7 @@ namespace Dashboard
             {
                 Underlying = new Security()
                 {
-                    Name = "BNP FP EQUITY",
+                    Name = "ESM9 INDEX",
                     PreviousClose = 24.4,
                     Last = 23.9,
                     Sector = "Europe"
