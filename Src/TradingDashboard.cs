@@ -108,5 +108,33 @@ namespace Dashboard
                 childForm.Close();
             }
         }
+       
+        private void Loadbooksfromfile_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.InitialDirectory = "c:\\";
+                openFileDialog.Filter = "txt files (*.txt)|*.txt";
+                openFileDialog.FilterIndex = 2;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    //Get the path of specified file
+                    var filePath = openFileDialog.FileName;
+
+                    //Read the contents of the file into a stream
+                    var fileStream = openFileDialog.OpenFile();
+
+                    using (System.IO.StreamReader reader = new System.IO.StreamReader(fileStream))
+                    {
+                        if (Model.Instance.LoadFromBooksFile(reader))
+                            MessageBox.Show(String.Format("books loaded from file {0} ", openFileDialog.FileName),"Books Loaded");
+                        else
+                            MessageBox.Show(String.Format("Unable to load books from file {0} ", openFileDialog.FileName), "Books Not Loaded");
+                    }
+                }
+            }
+        }
     }
 }

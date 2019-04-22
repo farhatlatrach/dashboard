@@ -50,6 +50,9 @@ namespace Dashboard
     {
         public Security Underlying { get; set; }
         public double SoldQuantity { get; set; }
+        public double BODPnL { get; set; }
+
+        public double Quantity { get; set; }
         public double SoldAveragePrice { get; set; }
         public double BoughtQuantity { get; set; }
         public double BoughtAveragePrice { get; set; }
@@ -124,10 +127,55 @@ namespace Dashboard
             }
         }
 
+        public bool LoadFromBooksFile(System.IO.StreamReader reader)
+        {
+            bool at_header = true;
+            Portfolios.Clear();
+            while (!reader.EndOfStream)
+            {
+                var line = reader.ReadLine();
+                if (at_header)
+                {
+                    at_header=false;
+                    continue;//first line is the header
+                }
+               
+                var values = line.Split('|');
+                /*
+             Date|Book|Security|Delta|TdyPnL|BODPnL|TdingPnL|DivPnL|LastPx|PrevCLS
+             |Position|BODPos|Bought|BuyPx|Sold|SellPx|Multiplier|SecType|Curncy|YTDPnL|MTDPnL|WTDPnL    
+             */
+                bool is_new_folio = false;
+        Portfolio the_portfolio= new Portfolio();
+            if(false == Portfolios.TryGetValue(values[1],out the_portfolio))
+            {
+                    the_portfolio = new Portfolio(){ Name = values[1]};
+                     is_new_folio = true;
+
+                }
+                Position pos = new Position()
+                {
+                    Underlying = new Security()
+                    {
+                        Name = values[2]
+                    },
+                    BODPnL = Convert.ToDouble(values[5]),
+                    BoughtAveragePrice = Convert.ToDouble(values[13]),
+                    BoughtQuantity = Convert.ToDouble(values[12]),
+                    SoldAveragePrice = Convert.ToDouble(values[15]),
+                    SoldQuantity = Convert.ToDouble(values[14]),
+                    BeginOfDayQuantity = Convert.ToDouble(values[11])
+                };
+                the_portfolio.Positions.Add(pos.Underlying.Name, pos);
+              if (is_new_folio)
+                    Portfolios.Add(the_portfolio.Name, the_portfolio);
+            }
+            return true;
+        }
         private void LoadModel()
         {
             Portfolios.Clear();
-
+            return;
             // testings..
 
             Portfolio ptf0 = new Portfolio() { Name = "European0" };

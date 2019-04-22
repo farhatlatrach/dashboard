@@ -36,6 +36,7 @@
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.MainMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadbooksfromfile = new System.Windows.Forms.ToolStripMenuItem();
             this.LoadBooksMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.RiskAnalyticsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
@@ -45,8 +46,8 @@
             this.statusBarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.forexToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.toolStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -92,6 +93,7 @@
             // MainMenu
             // 
             this.MainMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.loadbooksfromfile,
             this.LoadBooksMenuItem,
             this.RiskAnalyticsMenuItem,
             this.toolStripSeparator5,
@@ -101,13 +103,21 @@
             this.MainMenu.Size = new System.Drawing.Size(60, 20);
             this.MainMenu.Text = "&Trading";
             // 
+            // loadbooksfromfile
+            // 
+            this.loadbooksfromfile.Name = "loadbooksfromfile";
+            this.loadbooksfromfile.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
+            this.loadbooksfromfile.Size = new System.Drawing.Size(227, 22);
+            this.loadbooksfromfile.Text = "&Load Books From File";
+            this.loadbooksfromfile.Click += new System.EventHandler(this.Loadbooksfromfile_Click);
+            // 
             // LoadBooksMenuItem
             // 
             this.LoadBooksMenuItem.ImageTransparentColor = System.Drawing.Color.Black;
             this.LoadBooksMenuItem.Name = "LoadBooksMenuItem";
-            this.LoadBooksMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.LoadBooksMenuItem.Size = new System.Drawing.Size(189, 22);
-            this.LoadBooksMenuItem.Text = "&Load Books";
+            this.LoadBooksMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.LoadBooksMenuItem.Size = new System.Drawing.Size(227, 22);
+            this.LoadBooksMenuItem.Text = "&Show Books";
             this.LoadBooksMenuItem.Click += new System.EventHandler(this.ShowPortfoliosForm);
             // 
             // RiskAnalyticsMenuItem
@@ -115,19 +125,19 @@
             this.RiskAnalyticsMenuItem.ImageTransparentColor = System.Drawing.Color.Black;
             this.RiskAnalyticsMenuItem.Name = "RiskAnalyticsMenuItem";
             this.RiskAnalyticsMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.RiskAnalyticsMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.RiskAnalyticsMenuItem.Size = new System.Drawing.Size(227, 22);
             this.RiskAnalyticsMenuItem.Text = "&Risk Analytics";
             this.RiskAnalyticsMenuItem.Click += new System.EventHandler(this.ShowRiskAnalyticsForm);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(186, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(224, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(227, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolsStripMenuItem_Click);
             // 
@@ -146,7 +156,7 @@
             this.toolBarToolStripMenuItem.CheckOnClick = true;
             this.toolBarToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.toolBarToolStripMenuItem.Name = "toolBarToolStripMenuItem";
-            this.toolBarToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.toolBarToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.toolBarToolStripMenuItem.Text = "&Toolbar";
             this.toolBarToolStripMenuItem.Click += new System.EventHandler(this.ToolBarToolStripMenuItem_Click);
             // 
@@ -156,7 +166,7 @@
             this.statusBarToolStripMenuItem.CheckOnClick = true;
             this.statusBarToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.statusBarToolStripMenuItem.Name = "statusBarToolStripMenuItem";
-            this.statusBarToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.statusBarToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.statusBarToolStripMenuItem.Text = "&Status Bar";
             this.statusBarToolStripMenuItem.Click += new System.EventHandler(this.StatusBarToolStripMenuItem_Click);
             // 
@@ -172,8 +182,14 @@
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.optionsToolStripMenuItem.Text = "&Securities";
+            // 
+            // forexToolStripMenuItem
+            // 
+            this.forexToolStripMenuItem.Name = "forexToolStripMenuItem";
+            this.forexToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.forexToolStripMenuItem.Text = "&Forex";
             // 
             // menuStrip
             // 
@@ -187,13 +203,7 @@
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "MenuStrip";
             // 
-            // forexToolStripMenuItem
-            // 
-            this.forexToolStripMenuItem.Name = "forexToolStripMenuItem";
-            this.forexToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.forexToolStripMenuItem.Text = "&Forex";
-            // 
-            // MDIParent
+            // TradingDashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -203,7 +213,7 @@
             this.Controls.Add(this.menuStrip);
             this.IsMdiContainer = true;
             this.MainMenuStrip = this.menuStrip;
-            this.Name = "MDIParent";
+            this.Name = "TradingDashboard";
             this.Text = "Trading Dashboard";
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
@@ -235,6 +245,7 @@
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem forexToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadbooksfromfile;
     }
 }
 
