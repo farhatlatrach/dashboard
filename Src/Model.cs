@@ -99,6 +99,7 @@ namespace Dashboard
 
         public double  Open { get; set; }
         public double PreviousClose { get; set; }
+        public double PreviousAdjClose { get; set; }
         public double Last { get; set; }
         public double QuotationFactor { get; set; }
         public string Currency { get; set; }

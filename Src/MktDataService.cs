@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 using log4net;
+
 namespace Dashboard
 {
     class MktDataService
@@ -112,7 +113,7 @@ namespace Dashboard
         {
             List<string> subscriptionOptions = new List<string>();
             List<string> fieldList = new List<string>();
-            fieldList.Add(LAST_PRICE);
+            fieldList.Add(StaticDataService.LAST_PRICE);
             fieldList.Add("MKTDATA_EVENT_TYPE");
             fieldList.Add("MKTDATA_EVENT_SUBTYPE");
             fieldList.Add("IS_DELAYED_STREAM");
@@ -138,7 +139,7 @@ namespace Dashboard
         {
             List<string> subscriptionOptions = new List<string>();
             List<string> fieldList = new List<string>();
-            fieldList.Add(LAST_PRICE);
+            fieldList.Add(StaticDataService.LAST_PRICE);
             fieldList.Add("MKTDATA_EVENT_TYPE");
             fieldList.Add("MKTDATA_EVENT_SUBTYPE");
             fieldList.Add("IS_DELAYED_STREAM");
@@ -284,12 +285,12 @@ namespace Dashboard
 
                 if (d_mapCIDtoTickers.TryGetValue(lCID, out sec))
                 {
-                    if (msg.HasElement(LAST_PRICE))
+                    if (msg.HasElement(StaticDataService.LAST_PRICE))
                     {
-                        if (!msg.GetElement(LAST_PRICE).IsNull)
+                        if (!msg.GetElement(StaticDataService.LAST_PRICE).IsNull)
                         {
                             PriceUpdate priceupdate = new PriceUpdate
-                                (sec, msg.GetElement(LAST_PRICE).GetValueAsFloat64());
+                                (sec, msg.GetElement(StaticDataService.LAST_PRICE).GetValueAsFloat64());
                             
                             //    Last = msg.GetElement(LAST_PRICE).GetValueAsFloat64()
                            
