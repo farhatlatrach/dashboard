@@ -6,7 +6,34 @@ using System.Threading.Tasks;
 using System.Collections;
 namespace Dashboard
 {
-     public class Security
+    public class PriceUpdate
+    {
+        private string name_;
+        private double price_;
+        private PriceUpdate() { }
+        public PriceUpdate (string name, double price)
+        {
+            name_ = name;
+            price_ = price;
+        }
+        public string Name
+        {
+            get
+            {
+                return name_;
+            }
+        }
+        public double Price
+        {
+            get
+            {
+                return price_;
+            }
+        }
+
+    }
+
+    public class Security
     {
         private Security() { }
         private string name_;
@@ -19,7 +46,7 @@ namespace Dashboard
             }
         }
         public string Sector { get; set; }
-        public string Ticker { get; set; }
+        public string BloombergTicker { get; set; }
         public string Country { get; set; }
 
         public double  Open { get; set; }
