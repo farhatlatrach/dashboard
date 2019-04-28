@@ -305,7 +305,26 @@ namespace Dashboard
         }
         private void UpdateStaticDataInDataSet(Security updated_security)
         {
+            if (updated_security.Currency != "USD")
+            {
+                Security forex_sec = Security.CreateForexSecurity("USD", updated_security.Currency);
+                bool new_security = true;
+                try
+                {
 
+                    TradingDashboard.the_data_set.Tables["securities_table"].Rows.Add(0, 0, 1, 1, forex_sec.Name, "", forex_sec.Name,
+                       forex_sec.BloombergTicker, "Unknown Sector", "Unknown Country");
+                    TradingDashboard.the_data_set.Tables["securities_table"].AcceptChanges();
+                }
+                catch (ConstraintException ex)
+                {
+                    new_security = false;
+                    //this is ignored as it is normal to violate here 
+                }
+                if (new_security)//get static data
+                    DataSource.WatchedTickers.Enqueue(forex_sec);
+            }
+          
         }
         private void BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
@@ -325,6 +344,7 @@ namespace Dashboard
             {
                 Security sec = (Security)e.UserState;
                 portfolios_form.UpdateStaticDataInDataGrids(sec);
+                UpdateStaticDataInDataSet(sec);
             }
             else
             {

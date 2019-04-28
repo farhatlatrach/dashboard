@@ -185,10 +185,6 @@ namespace Dashboard
                                     row.Cells["Security Currency"].Value = sec.Currency;
                                     row.Cells["Security Country"].Value = sec.Country;
                                     row.Cells["Security Sector"].Value = sec.Sector;
-
-                                    if (sec.Currency != "USD")
-                                        DataSource.WatchedTickers.Enqueue(Security.CreateForexSecurity("USD", sec.Currency));
-                                   
                                 }
                             }
                            
