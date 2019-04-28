@@ -33,7 +33,7 @@ namespace Dashboard
         }
         private DataTable NewPositionViewDataTable(DataGridView view)
         {
-            DataTable old_table = (DataTable)view.DataSource;
+            
             DataTable data_table = new DataTable();
             
             data_table.Columns.Add("Security Name", typeof(string));
@@ -55,12 +55,15 @@ namespace Dashboard
             data_table.Columns.Add("YTD PnL", typeof(double));
             data_table.Columns.Add("MTD PnL", typeof(double));
             data_table.Columns.Add("WTD PnL", typeof(double));
-            if (old_table != null)
-            {
-                data_table.DefaultView.Sort = old_table.DefaultView.Sort;
-                data_table.DefaultView.Site = old_table.DefaultView.Site;
-               
-            }
+
+            data_table.Columns.Add("Security Quotation Factor", typeof(double));
+            data_table.Columns.Add("Portfolio Currency", typeof(string));
+            data_table.Columns.Add("Security Currency", typeof(string));
+            data_table.Columns.Add("Forex", typeof(string));//pair = Portfolio ccy/security ccy
+            data_table.Columns.Add("Forex Rate", typeof(double));
+            data_table.Columns.Add("Security Sector", typeof(string));
+            data_table.Columns.Add("Security Country", typeof(string));
+
             return data_table;
         }
         private void AddPortfolioTab(string folio_name)
@@ -103,27 +106,27 @@ namespace Dashboard
             
             
         }
-        public void UpdatePricesInDataGrids(Security sec)
+        public void UpdatePricesInDataGrids(PriceUpdate price)
         {
-            var sec_row_to_update = TradingDashboard.the_data_set.Tables["securities_table"].AsEnumerable().Where(
-               row =>
-               row.Field<string>("Security Name") == sec.Name
-               );
-            if (sec_row_to_update.Count<DataRow>() == 1)
-            {
+            //var sec_row_to_update = TradingDashboard.the_data_set.Tables["securities_table"].AsEnumerable().Where(
+            //   row =>
+            //   row.Field<string>("Security Name") == sec.Name
+            //   );
+            //if (sec_row_to_update.Count<DataRow>() == 1)
+            //{
                
-                sec_row_to_update.ElementAt(0).SetField("LastPrice", sec.Last);
-                sec_row_to_update.ElementAt(0).SetField("PreviousClose", sec.PreviousClose);
+            //    sec_row_to_update.ElementAt(0).SetField("LastPrice", price.Last);
+            //    sec_row_to_update.ElementAt(0).SetField("PreviousClose", sec.PreviousClose);
                 
                
-                sec_row_to_update.ElementAt(0).SetField("Security Type", sec.SecurityType);
-                sec_row_to_update.ElementAt(0).SetField("Currency", sec.Currency);
+            //    sec_row_to_update.ElementAt(0).SetField("Security Type", sec.SecurityType);
+            //    sec_row_to_update.ElementAt(0).SetField("Currency", sec.Currency);
                 
-                sec_row_to_update.ElementAt(0).SetField("Sector", sec.Sector);
-                sec_row_to_update.ElementAt(0).SetField("Country", sec.Country);
-                TradingDashboard.the_data_set.Tables["securities_table"].AcceptChanges();
+            //    sec_row_to_update.ElementAt(0).SetField("Sector", sec.Sector);
+            //    sec_row_to_update.ElementAt(0).SetField("Country", sec.Country);
+            //    TradingDashboard.the_data_set.Tables["securities_table"].AcceptChanges();
 
-            }//Securities is first inserted from position so always update
+            //}//Securities is first inserted from position so always update
         
 
             foreach (TabPage tab in tabControl_portfolios.Controls)
@@ -138,9 +141,13 @@ namespace Dashboard
                         
                         foreach (DataGridViewRow row in view.Rows)
                         {
-                            if ((string)row.Cells["Security Name"].Value == sec.Name)
+                            if ((string)row.Cells["Security Name"].Value.ToString() == price.Name)
                             {
-                                row.Cells["Last Price"].Value = sec.Last;
+                                row.Cells["Last Price"].Value = price.Price;
+
+                            }else if ((string)row.Cells["Forex"].Value.ToString() == price.Name)
+                            {
+                                row.Cells["Forex Rate"].Value = price.Price;
 
                             }
                         }
@@ -152,51 +159,48 @@ namespace Dashboard
            
 
         }
+        public void UpdateStaticDataInDataGrids(Security sec)
+        {
+
+
+           
+
+            foreach (TabPage tab in tabControl_portfolios.Controls)
+            {
+             
+                {
+                    foreach (Control control in tab.Controls)
+                    {
+                        if (control.Name == "dataGridView")
+                        {
+                            DataGridView view = (DataGridView)control;
+                            
+                            foreach (DataGridViewRow row in view.Rows)
+                            {
+                               
+                                if ((string)row.Cells["Security Name"].Value == sec.Name)
+                                {
+                                    row.Cells["Security Quotation Factor"].Value = sec.QuotationFactor;
+                                    row.Cells["Portfolio Currency"].Value = "USD";
+                                    row.Cells["Security Currency"].Value = sec.Currency;
+                                    row.Cells["Security Country"].Value = sec.Country;
+                                    row.Cells["Security Sector"].Value = sec.Sector;
+
+                                    if (sec.Currency != "USD")
+                                        DataSource.WatchedTickers.Enqueue(Security.CreateForexSecurity("USD", sec.Currency));
+                                   
+                                }
+                            }
+                           
+                        }
+                    }
+                }
+            }
+           
+        }
         public void UpdatePositionInDataGrids(Position pos)
         {
-            var pos_rows_to_update = TradingDashboard.the_data_set.Tables["positions_table"].AsEnumerable().Where(
-                row => 
-                row.Field<string>("Security Name") == pos.Underlying 
-                &&
-                row.Field<string>("Portfolio") == pos.PortfolioName);
-            if(pos_rows_to_update.Count<DataRow>() == 1)
-            {
-
-                pos_rows_to_update.ElementAt(0).SetField("Portfolio", pos.PortfolioName);
-                pos_rows_to_update.ElementAt(0).SetField("Security Name", pos.Underlying);
-                pos_rows_to_update.ElementAt(0).SetField("BOD PnL", pos.BODPnL);
-                pos_rows_to_update.ElementAt(0).SetField("Realized PnL", pos.RealizedPnL);
-                pos_rows_to_update.ElementAt(0).SetField("BOD Position", pos.BeginOfDayQuantity);
-                pos_rows_to_update.ElementAt(0).SetField("Bought Quantity", pos.BoughtQuantity);
-                pos_rows_to_update.ElementAt(0).SetField("Average Bought Price", pos.BoughtAveragePrice);
-                pos_rows_to_update.ElementAt(0).SetField("Sold Quantity", pos.SoldQuantity);
-                pos_rows_to_update.ElementAt(0).SetField("Average Sold Price", pos.SoldAveragePrice);
-                TradingDashboard.the_data_set.Tables["positions_table"].AcceptChanges();
-
-            }
-            else
-            {
-                TradingDashboard.the_data_set.Tables["positions_table"].Rows.Add(pos.PortfolioName,
-                    pos.Underlying, pos.BODPnL, pos.RealizedPnL,
-                    pos.BoughtQuantity, pos.BoughtAveragePrice, pos.SoldQuantity, pos.SoldAveragePrice);
-                TradingDashboard.the_data_set.Tables["positions_table"].AcceptChanges();
-                var sec_rows_to_update = TradingDashboard.the_data_set.Tables["securities_table"].AsEnumerable().Where(
-                row =>
-                row.Field<string>("Security Name") == pos.Underlying
-                );
-
-                try
-                {
-
-                    TradingDashboard.the_data_set.Tables["securities_table"].Rows.Add(0, 0, 1, 1, pos.UnderlyingType, "", pos.Underlying,
-                        pos.UnderlyingTicker, "Unknown Sector", "Unknown Country");
-                    TradingDashboard.the_data_set.Tables["securities_table"].AcceptChanges();
-                }
-                catch (ConstraintException ex)
-                {
-                    //this is ignored as it is normal to violate here 
-                }
-            }
+           
 
             bool found_folio = false;
            
@@ -214,7 +218,7 @@ namespace Dashboard
                             bool found = false;
                             foreach (DataGridViewRow row in view.Rows)
                             {
-                                if ((string)row.Cells["Security Name"].Value == pos.Underlying)
+                                if ((string)row.Cells["Security Name"].Value.ToString() == pos.Underlying)
                                 {
                                     row.Cells["Average Sold Price"].Value = pos.SoldAveragePrice;
                                     row.Cells["Average Bought Price"].Value = pos.BoughtAveragePrice;

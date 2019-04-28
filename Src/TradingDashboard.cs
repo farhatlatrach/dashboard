@@ -224,11 +224,14 @@ namespace Dashboard
              |MTDPnL[20]|WTDPnL[21]   
              */
 
-                
-                    Position pos = new Position()
-                    {
-                        PortfolioName = values[1],
-                        Underlying = values[2],
+
+                Position pos = new Position()
+                {
+                    PortfolioName = values[1],
+                    Currency = "USD",
+                    UnderlyingType = values[17],
+                    UnderlyingTicker = values[2],
+                    Underlying = values[2],
                         RealizedPnL = Convert.ToDouble(values[4]),
                         BODPnL = Convert.ToDouble(values[5]),
                         BeginOfDayQuantity = Convert.ToDouble(values[11]),
@@ -237,12 +240,8 @@ namespace Dashboard
                         SoldQuantity = Convert.ToDouble(values[14]),
                         SoldAveragePrice = Convert.ToDouble(values[15])
                     };
-                    Security sec = new Security(values[2])
-                    {
-                       
-                        SecurityType = values[17]
-                      
-                    };
+                Security sec = Security.GetNewSecurityFromOMSPosition(values[2], values[2], values[17]);
+                  
                     DataSource.RTUpdatesQueue.Enqueue(pos);
                     DataSource.RTUpdatesQueue.Enqueue(sec);
                    
@@ -250,18 +249,82 @@ namespace Dashboard
          
         }
 
-       
+       private void UpdatePriceInDataSet(PriceUpdate update_price)
+        {
+            
+        }
+        private void UpdatePositionInDataSet(Position updated_position)
+        {
+            var pos_rows_to_update = TradingDashboard.the_data_set.Tables["positions_table"].AsEnumerable().Where(
+               row =>
+               row.Field<string>("Security Name") == updated_position.Underlying
+               &&
+               row.Field<string>("Portfolio") == updated_position.PortfolioName);
+            if (pos_rows_to_update.Count<DataRow>() == 1)
+            {
+
+                pos_rows_to_update.ElementAt(0).SetField("Portfolio", updated_position.PortfolioName);
+                pos_rows_to_update.ElementAt(0).SetField("Security Name", updated_position.Underlying);
+                pos_rows_to_update.ElementAt(0).SetField("BOD PnL", updated_position.BODPnL);
+                pos_rows_to_update.ElementAt(0).SetField("Realized PnL", updated_position.RealizedPnL);
+                pos_rows_to_update.ElementAt(0).SetField("BOD Position", updated_position.BeginOfDayQuantity);
+                pos_rows_to_update.ElementAt(0).SetField("Bought Quantity", updated_position.BoughtQuantity);
+                pos_rows_to_update.ElementAt(0).SetField("Average Bought Price", updated_position.BoughtAveragePrice);
+                pos_rows_to_update.ElementAt(0).SetField("Sold Quantity", updated_position.SoldQuantity);
+                pos_rows_to_update.ElementAt(0).SetField("Average Sold Price", updated_position.SoldAveragePrice);
+                TradingDashboard.the_data_set.Tables["positions_table"].AcceptChanges();
+
+            }
+            else
+            {
+                TradingDashboard.the_data_set.Tables["positions_table"].Rows.Add(updated_position.PortfolioName,
+                    updated_position.Underlying, updated_position.BODPnL, updated_position.RealizedPnL,
+                    updated_position.BoughtQuantity, updated_position.BoughtAveragePrice, updated_position.SoldQuantity, updated_position.SoldAveragePrice);
+                TradingDashboard.the_data_set.Tables["positions_table"].AcceptChanges();
+                var sec_rows_to_update = TradingDashboard.the_data_set.Tables["securities_table"].AsEnumerable().Where(
+                row =>
+                row.Field<string>("Security Name") == updated_position.Underlying
+                );
+
+                bool new_security = true;
+                try
+                {
+
+                    TradingDashboard.the_data_set.Tables["securities_table"].Rows.Add(0, 0, 1, 1, updated_position.UnderlyingType, "", updated_position.Underlying,
+                        updated_position.UnderlyingTicker, "Unknown Sector", "Unknown Country");
+                    TradingDashboard.the_data_set.Tables["securities_table"].AcceptChanges();
+                }
+                catch (ConstraintException ex)
+                {
+                    new_security = false;
+                    //this is ignored as it is normal to violate here 
+                }
+                if (new_security)//get static data
+                    DataSource.WatchedTickers.Enqueue(Security.GetNewSecurityFromOMSPosition(updated_position.UnderlyingTicker, updated_position.UnderlyingTicker,updated_position.UnderlyingType));
+            }
+        }
+        private void UpdateStaticDataInDataSet(Security updated_security)
+        {
+
+        }
         private void BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            if (e.UserState is Security)
+            if (e.UserState is PriceUpdate)
             {
-                Security sec = (Security)e.UserState;
-                portfolios_form.UpdatePricesInDataGrids(sec);
+                PriceUpdate price = (PriceUpdate)e.UserState;
+                portfolios_form.UpdatePricesInDataGrids(price);
             }
             else if (e.UserState is Position)
             {
                 Position pos = (Position)e.UserState;
                 portfolios_form.UpdatePositionInDataGrids(pos);
+                UpdatePositionInDataSet(pos);
+            }
+            else 
+            if(e.UserState is Security)
+            {
+                Security sec = (Security)e.UserState;
+                portfolios_form.UpdateStaticDataInDataGrids(sec);
             }
             else
             {

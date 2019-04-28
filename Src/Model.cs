@@ -35,6 +35,54 @@ namespace Dashboard
 
     public class Security
     {
+        public enum E_SecurityType
+        {
+            EquityType=1,
+            FutureType,
+            ForexType,
+            UnknownType
+        }
+
+        public static E_SecurityType SecurityTypeFromOmsType(string oms_type)
+        {
+            if (oms_type == "E")
+                return E_SecurityType.EquityType;
+            if (oms_type == "F")
+                return E_SecurityType.FutureType;
+            if (oms_type == "X")
+                return E_SecurityType.ForexType;
+            return E_SecurityType.UnknownType;
+        }
+        public static Security GetNewSecurityFromOMSPosition(string ticker, string symbol, string sec_type)
+        {
+          
+            E_SecurityType type = SecurityTypeFromOmsType(sec_type);
+            string sec_name = ticker;
+            if (type == E_SecurityType.EquityType)
+                sec_name = symbol;
+            string bloomberg_ticker = sec_name;
+            bloomberg_ticker.Replace('.', ' ');
+            bloomberg_ticker.Replace('_', ' ');
+            Security sec = new Security(sec_name);
+            if (sec.SecurityType==E_SecurityType.EquityType)
+            {
+                sec.BloombergTicker = bloomberg_ticker + " EQUITY";
+            }else if (sec.SecurityType == E_SecurityType.FutureType)
+            {
+                sec.BloombergTicker = bloomberg_ticker + " INDEX";
+            }else if (sec.SecurityType == E_SecurityType.ForexType)
+            {
+                sec.BloombergTicker = bloomberg_ticker + " CRNCY";
+            }
+            return sec;
+        }
+        public static Security CreateForexSecurity(string portfolio_ccy, string security_ccy)
+        {
+            Security sec = new Security(security_ccy + "/" + portfolio_ccy);
+            sec.BloombergTicker = security_ccy + portfolio_ccy;
+            sec.SecurityType = E_SecurityType.ForexType;
+            return sec;
+        }
         private Security() { }
         private string name_;
         public Security(string name) { name_ = name; }
@@ -52,8 +100,9 @@ namespace Dashboard
         public double  Open { get; set; }
         public double PreviousClose { get; set; }
         public double Last { get; set; }
+        public double QuotationFactor { get; set; }
         public string Currency { get; set; }
-        public string SecurityType { get; set; }
+        public E_SecurityType SecurityType { get; set; }
         public long ID { get; set; }
         
     }
@@ -112,6 +161,7 @@ namespace Dashboard
         public double RealizedPnL { get; set; }
         public string PortfolioName { get; set; }
         public string Ticker { get; set; }
+        public string Currency { get; set; }
     }
     public class Trade
     {
