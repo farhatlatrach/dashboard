@@ -35,6 +35,22 @@ namespace Dashboard
 
     public class Security
     {
+        public enum E_SecurityType
+        {
+            EquityType=1,
+            FutureType,
+            ForexType,
+            UnknownType
+        }
+
+        public static E_SecurityType SecurityTypeFromOmsType(string oms_type)
+        {
+            if (oms_type == "E")
+                return E_SecurityType.EquityType;
+            if (oms_type == "F")
+                return E_SecurityType.FutureType;
+            return E_SecurityType.UnknownType;
+        }
         private Security() { }
         private string name_;
         public Security(string name) { name_ = name; }
@@ -53,7 +69,7 @@ namespace Dashboard
         public double PreviousClose { get; set; }
         public double Last { get; set; }
         public string Currency { get; set; }
-        public string SecurityType { get; set; }
+        public E_SecurityType SecurityType { get; set; }
         public long ID { get; set; }
         
     }
