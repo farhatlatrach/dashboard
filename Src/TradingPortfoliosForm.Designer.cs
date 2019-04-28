@@ -185,9 +185,12 @@ namespace Dashboard
                                     row.Cells["Security Currency"].Value = sec.Currency;
                                     row.Cells["Security Country"].Value = sec.Country;
                                     row.Cells["Security Sector"].Value = sec.Sector;
+                                    row.Cells["Forex"].Value = sec.Currency+ "/USD";
+                                    if(sec.Currency=="USD")
+                                        row.Cells["Forex Rate"].Value = 1;
                                 }
                             }
-                           
+                            this.BindingContext[view.DataSource].EndCurrentEdit();
                         }
                     }
                 }
@@ -238,6 +241,7 @@ namespace Dashboard
 
                                 view.DataSource = data_source;
                             }
+                            this.BindingContext[view.DataSource].EndCurrentEdit();
                         }
                         }
                 }
@@ -245,6 +249,7 @@ namespace Dashboard
             if (false==found_folio)
             {
                 AddPortfolioTab(pos.PortfolioName);
+                UpdatePositionInDataGrids(pos);
             }
         }
    

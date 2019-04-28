@@ -51,6 +51,19 @@ namespace Dashboard
                 RTUpdatesQueue.Enqueue(update_ticker);
                
                 System.Threading.Thread.Sleep(1500);
+                while(false == WatchedTickers.IsEmpty)
+                {
+                    Security sec = new Security("");
+                    WatchedTickers.TryDequeue(out sec);
+                   // Security sec2 = new Security(sec.Name);
+                    sec.Currency = "EUR";
+                    sec.Country = "France";
+                    sec.QuotationFactor = 1;
+                    sec.Sector = "Sector 1";
+                    RTUpdatesQueue.Enqueue(sec);
+                }
+                PriceUpdate update_ticker_fx = new PriceUpdate("EUR/USD", 0.84 + mult * 0.23);
+                RTUpdatesQueue.Enqueue(update_ticker_fx);
                 mult++;
             }
 

@@ -243,7 +243,7 @@ namespace Dashboard
                 Security sec = Security.GetNewSecurityFromOMSPosition(values[2], values[2], values[17]);
                   
                     DataSource.RTUpdatesQueue.Enqueue(pos);
-                    DataSource.RTUpdatesQueue.Enqueue(sec);
+                   // DataSource.WatchedTickers.Enqueue(sec);
                    
             }
          

@@ -64,6 +64,7 @@ namespace Dashboard
             bloomberg_ticker.Replace('.', ' ');
             bloomberg_ticker.Replace('_', ' ');
             Security sec = new Security(sec_name);
+            sec.SecurityType = type;
             if (sec.SecurityType==E_SecurityType.EquityType)
             {
                 sec.BloombergTicker = bloomberg_ticker + " EQUITY";
