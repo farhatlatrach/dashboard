@@ -16,14 +16,17 @@ namespace Dashboard
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+            
+        }
+        public  void ExplicitDispose(bool disposing)
+        {
             if (disposing && (components != null))
             {
                 components.Dispose();
             }
             base.Dispose(disposing);
-            instances--;
+            
         }
-
         private void CreatGridView(System.Collections.Generic.Dictionary<string, Portfolio> portfolios)
         {
             
@@ -94,6 +97,8 @@ namespace Dashboard
             this.Controls.Add(this.dataGridView_Portfolios);
             this.Name = "RiskAnalyticsForm";
             this.Text = "Risk Analytics";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.RiskAnalyticsForm_FormClosed);
+            this.Shown += new System.EventHandler(this.RiskAnalyticsForm_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Portfolios)).EndInit();
             this.ResumeLayout(false);
 

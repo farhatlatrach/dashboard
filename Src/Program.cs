@@ -21,6 +21,7 @@ namespace Dashboard
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Log.Info("starting program..");
+            DataSource.StartRTWatch();
         Application.Run(new TradingDashboard());
         }
     }

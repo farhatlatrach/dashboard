@@ -10,94 +10,55 @@ namespace Dashboard
     {
 
         public static ConcurrentQueue<Object> RTUpdatesQueue = new ConcurrentQueue<Object>();
-        
-        public static ConcurrentDictionary<string,byte> WatchedTickers = new ConcurrentDictionary<string, byte>();//a way to get a concurrent set (no duplicates)
+
+        public static ConcurrentQueue<Security> WatchedTickers = new ConcurrentQueue<Security>();
 
         public static void StartRTWatch()
         {
             // watch OMS
-            Action watch_oms = () =>
+           Action watch_oms = () =>
+           {
+             //Mahmoud add OMS start here
+             /*
+              start the callback which should enqueue new/updated position into "RTUpdatesQueue"
+              
+               */
+           };
+
+        //    // watch bloom this action is starting at the start of the program
+        Action watch_bloomberg = () =>
+        {
+            /*
+             * //Mahmoud 
+             * all the securities for bloom to deal with for both RT ans static data 
+             * are going to be in the "WatchedTickers" queue as a Security object
+             * (The push in the queue will be done from the portfolio form side (once there a is a new security 
+             * coming from OMS in a new position))
+             * So I suggest you do the following:
+             * 1- start an empty subscription to bloomberg
+             * 2- whithin a while(true) keep waiting anything coming in the queue
+             * 3- once you have a security in the queue 1) get its static data and push in the RT updates then 2) add it to the subscription for RT.
+             */
+            // some how pull oms system and enqueue into MarketDataUpdates
+            int mult = 1;
+            while (true)
             {
-                // somehow pull oms system and enqueue into OMSUpdates
-                int mult = 1;
-                while (true)
+                Security update_ticker = new Security("BNP FP")
                 {
-                    Position updated_pos = new  Position()
-                    {
-                        Underlying = new Security()
-                        {
-                            Name = "BNP",
-                            PreviousClose = 0.0,
-                            Last = 0.0,
-                            Sector = "Europe"
-                        },
+                    
+                    PreviousClose = 4.6,
+                    Last = 4.6 + mult * 0.23
+                };
+                RTUpdatesQueue.Enqueue(update_ticker);
+               
+                System.Threading.Thread.Sleep(1500);
+                mult++;
+            }
 
-                        BoughtAveragePrice = 23.9 + mult * 0.3,
-                        BoughtQuantity = 80077 + mult * 30,
-                        SoldAveragePrice = 23.8 + mult * 0.21,
-                        SoldQuantity = 690008 + mult * 37,
-                        BeginOfDayQuantity = 2700
-                    };
-                    RTUpdatesQueue.Enqueue(updated_pos);
-                    if ( mult % 5 == 0)
-                    {
-                        Position new_pos = new Position()
-                        {
-                            Underlying = new Security()
-                            {
-                                Name = "NEW_" + Convert.ToString(mult),
-                                PreviousClose = 0.0,
-                                Last = 0.0,
-                                Sector = "Europe"
-                            },
-                            PortfolioName = "European0",
-                            BoughtAveragePrice = 153.9 + mult * 0.06,
-                            BoughtQuantity = 80077 + mult * 30,
-                            SoldAveragePrice = 23.8 + mult * 0.21,
-                            SoldQuantity = 690008 + mult * 37,
-                            BeginOfDayQuantity = 3400
-                        };
-
-                        RTUpdatesQueue.Enqueue(new_pos);
-                        WatchedTickers.TryAdd(new_pos.Underlying.Name, 0);
-                    }
-                    System.Threading.Thread.Sleep(9600);
-                    mult++;
-                }
-            };
-
-            // watch bloom
-            Action watch_bloomberg = () =>
+        };
+        Task.Factory.StartNew(() =>
             {
-                // some how pull oms system and enqueue into MarketDataUpdates
-                int mult = 1;
-                while (true)
-                {
-                    Security update_ticker = new Security()
-                    {
-                        Name = "BNP",
-                        PreviousClose = 4.6,
-                        Last = 4.6 + mult * 0.23
-                    };
-                    RTUpdatesQueue.Enqueue(update_ticker);
-                    foreach(var pair in WatchedTickers)
-                    {
-                        Security update_ticker_new = new Security()
-                        {
-                            Name = pair.Key,
-                            PreviousClose = 5.6,
-                            Last = 3.7 + mult * 0.23
-                        };
-                        RTUpdatesQueue.Enqueue(update_ticker_new);
-                    }
-                    System.Threading.Thread.Sleep(1500);
-                    mult++;
-                }
-
-            };
-            Task.Factory.StartNew( () =>
-            {
-                Parallel.Invoke(watch_oms, watch_bloomberg);
+                Parallel.Invoke(watch_bloomberg,watch_oms);
             });
         }
     }

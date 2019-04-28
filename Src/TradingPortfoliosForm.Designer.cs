@@ -1,4 +1,6 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Dashboard
@@ -17,161 +19,235 @@ namespace Dashboard
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+           //call explicit dispose
+           
+        }
+        public  void ExplicitDispose(bool disposing)
+        {
             if (disposing && (components != null))
             {
                 components.Dispose();
             }
             base.Dispose(disposing);
-            instances--;
-        }
-        private DataColumn new_datacolumn(string name, System.Type type, string expression)
-        {
-            DataColumn data_column = new DataColumn();
-            data_column.DataType = type;
-            data_column.ColumnName = name;
-            data_column.Expression = expression;
 
-            return data_column;
         }
-        private void AddTabs(System.Collections.Generic.Dictionary<string, Portfolio> portfolios)
+        private DataTable NewPositionViewDataTable(DataGridView view)
         {
-            tabControl_portfolios.Controls.Clear();
-          
-            int i = 0;
-            foreach (var ptf in portfolios)
+            DataTable old_table = (DataTable)view.DataSource;
+            DataTable data_table = new DataTable();
+            
+            data_table.Columns.Add("Security Name", typeof(string));
+            data_table.Columns.Add("Today PnL", typeof(double));
+            data_table.Columns.Add("BOD PnL", typeof(double));
+            data_table.Columns.Add("Trading PnL", typeof(double));
+            data_table.Columns.Add("Div PnL", typeof(double));
+            data_table.Columns.Add("Last Price", typeof(double));
+            data_table.Columns.Add("Previous Close", typeof(double));
+            data_table.Columns.Add("Delta", typeof(double));
+            data_table.Columns.Add("Position", typeof(double));
+            data_table.Columns.Add("BOD Position", typeof(double));
+            data_table.Columns.Add("Bought Quantity", typeof(double));
+            data_table.Columns.Add("Average Bought Price", typeof(double));
+            data_table.Columns.Add("Sold Quantity", typeof(double));
+            data_table.Columns.Add("Average Sold Price", typeof(double));
+            data_table.Columns.Add("Multiplier", typeof(double));
+            data_table.Columns.Add("Security Type", typeof(string));
+            data_table.Columns.Add("YTD PnL", typeof(double));
+            data_table.Columns.Add("MTD PnL", typeof(double));
+            data_table.Columns.Add("WTD PnL", typeof(double));
+            if (old_table != null)
             {
+                data_table.DefaultView.Sort = old_table.DefaultView.Sort;
+                data_table.DefaultView.Site = old_table.DefaultView.Site;
+               
+            }
+            return data_table;
+        }
+        private void AddPortfolioTab(string folio_name)
+        {
+            
+            int tab_index = tabControl_portfolios.Controls.Count;
+           
+            
+            
                 TabPage tab = new TabPage();
                 tab.Location = new System.Drawing.Point(18, 20);
-                tab.Name =ptf.Key;
+                tab.Name = folio_name;
                 tab.Padding = new System.Windows.Forms.Padding(3);
-                tab.Size = new System.Drawing.Size(914,321);
-                tab.TabIndex = i;
-                tab.Text = "   " + ptf.Key +"   ";
+                tab.Size = new System.Drawing.Size(1260,600);
+                tab.TabIndex = tab_index;
+                tab.Text = "   " + folio_name + "   (USD)";
                 tab.UseVisualStyleBackColor = true;
                 // data grid
                 DataGridView dataGridView = new DataGridView();
 
                 dataGridView.AllowUserToAddRows = false;
                 dataGridView.AllowUserToDeleteRows = false;
+               
                 dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-                dataGridView.Location = new System.Drawing.Point(4, 4);
+                dataGridView.Location = new System.Drawing.Point(20, 22);
                 dataGridView.Name = "dataGridView";
                 dataGridView.ReadOnly = true;
-                dataGridView.Size = new System.Drawing.Size(1110, 140);
-                dataGridView.TabIndex = i;
-
-                // Create third column.
-                DataColumn deltaColumn = new DataColumn();
-                deltaColumn.DataType = System.Type.GetType("System.Decimal");
-                deltaColumn.ColumnName = "Delta";
-                deltaColumn.Expression = "LastPrice - PreviousClose"; //the delta column is function of last and previous close; just to test
-
-                DataTable data_source = new DataTable();
-                data_source.Columns.Add("Ticker");
-                
-                data_source.Columns.Add("Today PnL");
-                data_source.Columns.Add("BOD PnL");
-                data_source.Columns.Add("Trading PnL");
-                data_source.Columns.Add("Div PnL");
-                data_source.Columns.Add(new DataColumn("LastPrice", System.Type.GetType("System.Decimal")));
-                data_source.Columns.Add(new DataColumn("PreviousClose", System.Type.GetType("System.Decimal")));
-                data_source.Columns.Add(deltaColumn);
-                data_source.Columns.Add("Position");
-                data_source.Columns.Add("BOD Position");
-                data_source.Columns.Add("Bought Quantity");
-                data_source.Columns.Add("Average Bought Price");
-                data_source.Columns.Add("Sold Quantity");
-                data_source.Columns.Add("Average Sold Price");
-                data_source.Columns.Add("Multiplier");
-                data_source.Columns.Add("Security Type");
-                data_source.Columns.Add("YTD PnL");
-                data_source.Columns.Add("MTD PnL");
-                data_source.Columns.Add("WTD PnL");
-                foreach (var pos in ptf.Value.Positions)
-                {
-                    data_source.Rows.Add(pos.Key,
-                        null, null, null, null, null, pos.Value.Underlying.Last, pos.Value.Underlying.PreviousClose, null, pos.Value.BeginOfDayQuantity,
-                        pos.Value.BoughtQuantity, pos.Value.BoughtAveragePrice, pos.Value.SoldQuantity, pos.Value.SoldAveragePrice, 1,
-                        pos.Value.Underlying is Future ? "FUTURE" : "EQUITY", null, null, null);
-                        
-                }
-                dataGridView.DataSource = data_source;
+                dataGridView.Size = new System.Drawing.Size(1210, 550);
+                dataGridView.TabIndex = tab_index;
+              //  dataGridView.AutoGenerateColumns = true;
+           // dataGridView.HorizontalScrollingOffset = 0;
+            
+            dataGridView.RowsDefaultCellStyle.BackColor = System.Drawing.Color.White;
+            
+            dataGridView.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+                LoadFolioPositionsData(dataGridView,folio_name);
                 tab.Controls.Add(dataGridView);
-                tabControl_portfolios.Controls.Add(tab);
+                this.tabControl_portfolios.Controls.Add(tab);
 
-                i++;
-            }
+            
             
         }
-        private void UpdatePricesInDataGrids(Security sec)
+        public void UpdatePricesInDataGrids(Security sec)
         {
-            foreach(TabPage tab in tabControl_portfolios.Controls)
+            var sec_row_to_update = TradingDashboard.the_data_set.Tables["securities_table"].AsEnumerable().Where(
+               row =>
+               row.Field<string>("Security Name") == sec.Name
+               );
+            if (sec_row_to_update.Count<DataRow>() == 1)
             {
-                foreach (Control control in tab.Controls)
-                {
-                    if (control.Name == "dataGridView")
-                    {
-                        DataGridView view = (DataGridView)control;
-                        foreach(DataGridViewRow row in view.Rows)
-                        {
-                            if((string)row.Cells["Ticker"].Value == sec.Name)
-                            {
-                                row.Cells["LastPrice"].Value = sec.Last;
-                                
-                            }
-                        }
-                        this.BindingContext[view.DataSource].EndCurrentEdit();
+               
+                sec_row_to_update.ElementAt(0).SetField("LastPrice", sec.Last);
+                sec_row_to_update.ElementAt(0).SetField("PreviousClose", sec.PreviousClose);
+                
+               
+                sec_row_to_update.ElementAt(0).SetField("Security Type", sec.SecurityType);
+                sec_row_to_update.ElementAt(0).SetField("Currency", sec.Currency);
+                
+                sec_row_to_update.ElementAt(0).SetField("Sector", sec.Sector);
+                sec_row_to_update.ElementAt(0).SetField("Country", sec.Country);
+                TradingDashboard.the_data_set.Tables["securities_table"].AcceptChanges();
 
-                    }
+            }//Securities is first inserted from position so always update
+        
 
-                }
-            }
-
-        }
-        private void UpdatePositionInDataGrids(Position pos)
-        {
             foreach (TabPage tab in tabControl_portfolios.Controls)
             {
-                foreach (Control control in tab.Controls)
-                {
-                    if (control.Name == "dataGridView")
+                string folio_name = tab.Name;
+                    foreach (Control control in tab.Controls)
                     {
-                        DataGridView view = (DataGridView)control;
-                        bool found = false;
+                        if (control.Name == "dataGridView")
+                        {
+                            DataGridView view = (DataGridView)control;
+                         //   LoadFolioPositionsData(view, folio_name);
+                        
                         foreach (DataGridViewRow row in view.Rows)
                         {
-                            if ((string)row.Cells["Ticker"].Value == pos.Underlying.Name)
+                            if ((string)row.Cells["Security Name"].Value == sec.Name)
                             {
-                                row.Cells["Average Sold Price"].Value = pos.SoldAveragePrice;
-                                row.Cells["Average Bought Price"].Value = pos.BoughtAveragePrice;
-                                row.Cells["Sold Quantity"].Value = pos.SoldQuantity;
-                                row.Cells["Bought Quantity"].Value = pos.BoughtQuantity;
+                                row.Cells["Last Price"].Value = sec.Last;
 
-                                
-                                found = true;
-                                break;
                             }
                         }
-                        if(false == found 
-                            && (string)tab.Name == pos.PortfolioName)
-                        {
-                            DataTable data_source = (DataTable)view.DataSource;
-                            
-                            data_source.Rows.Add(pos.Underlying.Name,
-                        null, null, null, null, null, pos.Underlying.Last, pos.Underlying.PreviousClose, null, pos.BeginOfDayQuantity,
-                        pos.BoughtQuantity, pos.BoughtAveragePrice, pos.SoldQuantity, pos.SoldAveragePrice, 1,
-                        pos.Underlying is Future ? "FUTURE" : "EQUITY", null, null, null);
-
-                            view.DataSource = data_source;
-                        }
-
                         this.BindingContext[view.DataSource].EndCurrentEdit();
 
                     }
+                    }
+            }
+           
 
+        }
+        public void UpdatePositionInDataGrids(Position pos)
+        {
+            var pos_rows_to_update = TradingDashboard.the_data_set.Tables["positions_table"].AsEnumerable().Where(
+                row => 
+                row.Field<string>("Security Name") == pos.Underlying 
+                &&
+                row.Field<string>("Portfolio") == pos.PortfolioName);
+            if(pos_rows_to_update.Count<DataRow>() == 1)
+            {
+
+                pos_rows_to_update.ElementAt(0).SetField("Portfolio", pos.PortfolioName);
+                pos_rows_to_update.ElementAt(0).SetField("Security Name", pos.Underlying);
+                pos_rows_to_update.ElementAt(0).SetField("BOD PnL", pos.BODPnL);
+                pos_rows_to_update.ElementAt(0).SetField("Realized PnL", pos.RealizedPnL);
+                pos_rows_to_update.ElementAt(0).SetField("BOD Position", pos.BeginOfDayQuantity);
+                pos_rows_to_update.ElementAt(0).SetField("Bought Quantity", pos.BoughtQuantity);
+                pos_rows_to_update.ElementAt(0).SetField("Average Bought Price", pos.BoughtAveragePrice);
+                pos_rows_to_update.ElementAt(0).SetField("Sold Quantity", pos.SoldQuantity);
+                pos_rows_to_update.ElementAt(0).SetField("Average Sold Price", pos.SoldAveragePrice);
+                TradingDashboard.the_data_set.Tables["positions_table"].AcceptChanges();
+
+            }
+            else
+            {
+                TradingDashboard.the_data_set.Tables["positions_table"].Rows.Add(pos.PortfolioName,
+                    pos.Underlying, pos.BODPnL, pos.RealizedPnL,
+                    pos.BoughtQuantity, pos.BoughtAveragePrice, pos.SoldQuantity, pos.SoldAveragePrice);
+                TradingDashboard.the_data_set.Tables["positions_table"].AcceptChanges();
+                var sec_rows_to_update = TradingDashboard.the_data_set.Tables["securities_table"].AsEnumerable().Where(
+                row =>
+                row.Field<string>("Security Name") == pos.Underlying
+                );
+
+                try
+                {
+
+                    TradingDashboard.the_data_set.Tables["securities_table"].Rows.Add(0, 0, 1, 1, pos.UnderlyingType, "", pos.Underlying,
+                        pos.UnderlyingTicker, "Unknown Sector", "Unknown Country");
+                    TradingDashboard.the_data_set.Tables["securities_table"].AcceptChanges();
+                }
+                catch (ConstraintException ex)
+                {
+                    //this is ignored as it is normal to violate here 
                 }
             }
+
+            bool found_folio = false;
+           
+            foreach (TabPage tab in tabControl_portfolios.Controls)
+            {
+                if (tab.Name == pos.PortfolioName)
+                    found_folio = true;
+                if(found_folio)
+                {
+                        foreach (Control control in tab.Controls)
+                        {
+                            if (control.Name == "dataGridView")
+                            {
+                                DataGridView view = (DataGridView)control;
+                            bool found = false;
+                            foreach (DataGridViewRow row in view.Rows)
+                            {
+                                if ((string)row.Cells["Security Name"].Value == pos.Underlying)
+                                {
+                                    row.Cells["Average Sold Price"].Value = pos.SoldAveragePrice;
+                                    row.Cells["Average Bought Price"].Value = pos.BoughtAveragePrice;
+                                    row.Cells["Sold Quantity"].Value = pos.SoldQuantity;
+                                    row.Cells["Bought Quantity"].Value = pos.BoughtQuantity;
+
+
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (false == found
+                                && (string)tab.Name == pos.PortfolioName)
+                            {
+                                DataTable data_source = (DataTable)view.DataSource;
+                              
+                                data_source.Rows.Add(pos.Underlying,
+                            0, pos.BODPnL, 0, 0, 0, 0, 0, 0, pos.BeginOfDayQuantity,
+                            pos.BoughtQuantity, pos.BoughtAveragePrice, pos.SoldQuantity, pos.SoldAveragePrice, 1,
+                            pos.UnderlyingType, 0, 0, 0);
+
+                                view.DataSource = data_source;
+                            }
+                        }
+                        }
+                }
+            }
+            if (false==found_folio)
+            {
+                AddPortfolioTab(pos.PortfolioName);
+            }
         }
+   
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -180,62 +256,11 @@ namespace Dashboard
         /// </summary>
         private void InitializeComponent()
         {
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.tabControl_portfolios = new System.Windows.Forms.TabControl();
-            this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
-            this.button_start_rt = new System.Windows.Forms.Button();
-            this.button_cancel_RT = new System.Windows.Forms.Button();
-            this.data_source = new System.Data.DataTable();
             this.config_columns = new System.Windows.Forms.Button();
+            this.tabControl_portfolios = new System.Windows.Forms.TabControl();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.data_source)).BeginInit();
             this.SuspendLayout();
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.tabControl_portfolios);
-            this.groupBox1.Location = new System.Drawing.Point(12, 78);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1124, 551);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Portfolios";
-            // 
-            // tabControl_portfolios
-            // 
-            this.tabControl_portfolios.Location = new System.Drawing.Point(6, 20);
-            this.tabControl_portfolios.Name = "tabControl_portfolios";
-            this.tabControl_portfolios.SelectedIndex = 0;
-            this.tabControl_portfolios.Size = new System.Drawing.Size(1112, 346);
-            this.tabControl_portfolios.TabIndex = 0;
-            // 
-            // backgroundWorker
-            // 
-            this.backgroundWorker.WorkerReportsProgress = true;
-            this.backgroundWorker.WorkerSupportsCancellation = true;
-            this.backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BackgroundWorker_DoWork);
-            this.backgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.BackgroundWorker_ProgressChanged);
-            this.backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.BackgroundWorker_RunWorkerCompleted);
-            // 
-            // button_start_rt
-            // 
-            this.button_start_rt.Location = new System.Drawing.Point(1003, 12);
-            this.button_start_rt.Name = "button_start_rt";
-            this.button_start_rt.Size = new System.Drawing.Size(108, 23);
-            this.button_start_rt.TabIndex = 2;
-            this.button_start_rt.Text = "Start RT";
-            this.button_start_rt.UseVisualStyleBackColor = true;
-            this.button_start_rt.Click += new System.EventHandler(this.Start_rt_Click);
-            // 
-            // button_cancel_RT
-            // 
-            this.button_cancel_RT.Location = new System.Drawing.Point(999, 52);
-            this.button_cancel_RT.Name = "button_cancel_RT";
-            this.button_cancel_RT.Size = new System.Drawing.Size(114, 20);
-            this.button_cancel_RT.TabIndex = 3;
-            this.button_cancel_RT.Text = "Stop RT";
-            this.button_cancel_RT.UseVisualStyleBackColor = true;
-            this.button_cancel_RT.Click += new System.EventHandler(this.Button_cancel_RT_Click);
             // 
             // config_columns
             // 
@@ -247,33 +272,46 @@ namespace Dashboard
             this.config_columns.UseVisualStyleBackColor = true;
             this.config_columns.Click += new System.EventHandler(this.Config_columns_Click);
             // 
-            // Dashboard
+            // tabControl_portfolios
+            // 
+            this.tabControl_portfolios.Location = new System.Drawing.Point(6, 20);
+            this.tabControl_portfolios.Name = "tabControl_portfolios";
+            this.tabControl_portfolios.SelectedIndex = 0;
+            this.tabControl_portfolios.Size = new System.Drawing.Size(1400, 700);
+            this.tabControl_portfolios.TabIndex = 0;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.tabControl_portfolios);
+            this.groupBox1.Location = new System.Drawing.Point(12, 78);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(1420, 720);
+            this.groupBox1.TabIndex = 0;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Portfolios";
+            // 
+            // PortfoliosForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1245, 649);
             this.Controls.Add(this.config_columns);
-            this.Controls.Add(this.button_cancel_RT);
-            this.Controls.Add(this.button_start_rt);
             this.Controls.Add(this.groupBox1);
-            this.Name = "Dashboard";
+            this.Name = "PortfoliosForm";
             this.Text = "Dashboard";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.PortfoliosForm_FormClosed);
+            this.Shown += new System.EventHandler(this.PortfoliosForm_Shown);
             this.groupBox1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.data_source)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.TabControl tabControl_portfolios;
-        private System.ComponentModel.BackgroundWorker backgroundWorker;
-        private Button button_start_rt;
-        private Button button_cancel_RT;
         
-        private DataTable data_source;
+        private DataSet data_set_;
         private Button config_columns;
+        private TabControl tabControl_portfolios;
+        private GroupBox groupBox1;
     }
 }
 

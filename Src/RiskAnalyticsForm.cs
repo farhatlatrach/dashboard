@@ -12,16 +12,13 @@ namespace Dashboard
 {
     public partial class RiskAnalyticsForm : Form
     {
-        private static int instances = 0;
-        public static int InstancesCount()
-        {
-            return instances;
-        }
+        public bool IsFormOpen { get; set; }
+       
         public RiskAnalyticsForm()
         {
             InitializeComponent();
-            CreatGridView(Model.Instance.Portfolios);
-            instances++;
+         
+           
         }
 
         private void Config_columns_Click(object sender, EventArgs e)
@@ -33,6 +30,16 @@ namespace Dashboard
                 config_form.ShowDialog(this);
                
             
+        }
+
+        private void RiskAnalyticsForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            IsFormOpen = false;
+        }
+
+        private void RiskAnalyticsForm_Shown(object sender, EventArgs e)
+        {
+            IsFormOpen = true;
         }
     }
 }

@@ -287,9 +287,9 @@ namespace Dashboard
                     {
                         if (!msg.GetElement(LAST_PRICE).IsNull)
                         {
-                            Security updated_sec = new Security()
+                            Security updated_sec = new Security(sec)
                             {
-                                Name = sec,
+                          
                                 Last = msg.GetElement(LAST_PRICE).GetValueAsFloat64()
                             };
 
