@@ -26,8 +26,6 @@ namespace Dashboard
         private const string MKTDATA_SVC = "//blp/mktdata";
         private const string AUTH_SVC = "//blp/apiauth";
 
-        private const string LAST_PRICE = "LAST_PRICE";
-
         private static readonly Name SLOW_CONSUMER_WARNING = Name.GetName("SlowConsumerWarning");
         private static readonly Name SLOW_CONSUMER_WARNING_CLEARED =
                                                                Name.GetName("SlowConsumerWarningCleared");
@@ -48,7 +46,7 @@ namespace Dashboard
         private List<string> d_hosts;
         private int d_port;
         private Session d_session;
-        private List<string> d_securities;
+        private Dictionary<string, bool> d_securities;
         private List<string> d_fields;
         private List<string> d_topics;
 
@@ -70,7 +68,7 @@ namespace Dashboard
         {
             d_hosts = new List<string>();
             d_port = 8194;
-            d_securities = new List<string>();
+            d_securities = new Dictionary<string, bool>();
             d_fields = new List<string>();
             d_topics = new List<string>();
             d_mapCIDtoTickers = new Dictionary<long, string>();
@@ -99,7 +97,7 @@ namespace Dashboard
             if (d_session != null) d_session.Stop();
 
             //get securities from Model
-            d_securities = Model.Instance.getSecurities();
+//            d_securities = Model.Instance.getSecurities();
 
             string authOptions = string.Empty;
             SessionOptions options = new SessionOptions();
@@ -110,7 +108,7 @@ namespace Dashboard
         }
 
 
-        private void addNewSubscription(string sTicker)
+        public void addNewSubscription(Security sec)
         {
             List<string> subscriptionOptions = new List<string>();
             List<string> fieldList = new List<string>();
@@ -119,12 +117,14 @@ namespace Dashboard
             fieldList.Add("MKTDATA_EVENT_SUBTYPE");
             fieldList.Add("IS_DELAYED_STREAM");
 
-            if (!d_securities.Contains(sTicker)) {
+            if (!d_securities.ContainsKey(sec.Name)) {
                 int cid = d_securities.Count + 1;
+                
+                // For Forex put a larger Throttle.
                 subscriptionOptions.Add("interval = 5.0"); // throttle updates every 5 seconds                
-                d_topics.Add(sTicker);
-                d_subscriptions.Add(new Subscription(sTicker, fieldList, subscriptionOptions, new CorrelationID(cid)));
-                d_mapCIDtoTickers.Add(cid, sTicker);
+                d_topics.Add(sec.Name);
+                d_subscriptions.Add(new Subscription(sec.BloombergTicker, fieldList, subscriptionOptions, new CorrelationID(cid)));
+                d_mapCIDtoTickers.Add(cid, sec.Name);
 
                 d_session.Resubscribe(d_subscriptions);
                 d_isSubscribed = true;
@@ -174,10 +174,11 @@ namespace Dashboard
             mktDataService.run();
         }
 
-        private void run ()
+        public void run ()
         {
             // BLPAPI logging
             //            registerCallback(TraceLevel.Off);
+            Log.Info("starting bloomberg");
 
             // create session
             if (!createSession())
@@ -287,13 +288,12 @@ namespace Dashboard
                     {
                         if (!msg.GetElement(LAST_PRICE).IsNull)
                         {
-                            Security updated_sec = new Security(sec)
-                            {
-                          
-                                Last = msg.GetElement(LAST_PRICE).GetValueAsFloat64()
-                            };
-
-                            DataSource.RTUpdatesQueue.Enqueue(updated_sec);
+                            PriceUpdate priceupdate = new PriceUpdate
+                                (sec, msg.GetElement(LAST_PRICE).GetValueAsFloat64());
+                            
+                            //    Last = msg.GetElement(LAST_PRICE).GetValueAsFloat64()
+                           
+                            DataSource.RTUpdatesQueue.Enqueue(priceupdate);
                         }
                     }
                 }
