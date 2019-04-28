@@ -28,6 +28,8 @@ namespace Dashboard
         //    // watch bloom this action is starting at the start of the program
         Action watch_bloomberg = () =>
         {
+        log4net.ILog Log =
+           log4net.LogManager.GetLogger("DataSource.StartWatch.watch_bloomberg");// System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
             /*
              * //Mahmoud 
              * all the securities for bloom to deal with for both RT ans static data 
@@ -43,12 +45,9 @@ namespace Dashboard
             int mult = 1;
             while (true)
             {
-                Security update_ticker = new Security("BNP FP")
-                {
-                    
-                    PreviousClose = 4.6,
-                    Last = 4.6 + mult * 0.23
-                };
+                Log.Info("waiting prices..");
+                PriceUpdate update_ticker = new PriceUpdate("BNP FP", 4.6 + mult * 0.23);
+              
                 RTUpdatesQueue.Enqueue(update_ticker);
                
                 System.Threading.Thread.Sleep(1500);
