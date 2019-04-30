@@ -46,7 +46,7 @@ namespace Dashboard
             while (true)
             {
                 Log.Info("waiting prices..");
-                PriceUpdate update_ticker = new PriceUpdate("BNP FP", 4.6 + mult * 0.23);
+                PriceUpdate update_ticker = new PriceUpdate("AFX GY", 4.6 + mult * 0.23);
               
                 RTUpdatesQueue.Enqueue(update_ticker);
                

@@ -31,7 +31,7 @@ namespace Dashboard
             base.Dispose(disposing);
 
         }
-        private DataTable NewPositionViewDataTable(DataGridView view)
+        private DataTable NewPositionViewDataTable( )
         {
             
             DataTable data_table = new DataTable();
@@ -43,13 +43,16 @@ namespace Dashboard
             data_table.Columns.Add("Div PnL", typeof(double));
             data_table.Columns.Add("Last Price", typeof(double));
             data_table.Columns.Add("Previous Close", typeof(double));
-            data_table.Columns.Add("Delta", typeof(double));
-            data_table.Columns.Add("Position", typeof(double));
             data_table.Columns.Add("BOD Position", typeof(double));
             data_table.Columns.Add("Bought Quantity", typeof(double));
             data_table.Columns.Add("Average Bought Price", typeof(double));
             data_table.Columns.Add("Sold Quantity", typeof(double));
             data_table.Columns.Add("Average Sold Price", typeof(double));
+            data_table.Columns.Add("Position", typeof(double), "`Bought Quantity` -  `Sold Quantity` ");
+            data_table.Columns.Add("Forex Rate", typeof(double));
+            data_table.Columns.Add("Delta", typeof(double), "`Last Price` * `Position` * `Forex Rate`");
+           
+            
             data_table.Columns.Add("Multiplier", typeof(double));
             data_table.Columns.Add("Security Type", typeof(string));
             data_table.Columns.Add("YTD PnL", typeof(double));
@@ -60,12 +63,58 @@ namespace Dashboard
             data_table.Columns.Add("Portfolio Currency", typeof(string));
             data_table.Columns.Add("Security Currency", typeof(string));
             data_table.Columns.Add("Forex", typeof(string));//pair = Portfolio ccy/security ccy
-            data_table.Columns.Add("Forex Rate", typeof(double));
+            
             data_table.Columns.Add("Security Sector", typeof(string));
             data_table.Columns.Add("Security Country", typeof(string));
 
             return data_table;
         }
+        private void dataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            DataGridView the_view = (DataGridView)sender;
+           
+            if (the_view.Columns[e.ColumnIndex].Name == "Delta")
+            {
+                if (e.Value != null)
+                {
+                    if ((double)e.Value > 0)
+                        e.CellStyle.ForeColor = System.Drawing.Color.MediumVioletRed;
+                    else
+                        e.CellStyle.ForeColor = System.Drawing.Color.Green;
+                   
+                }
+            }
+            else if (the_view.Columns[e.ColumnIndex].Name == "Trading PnL")
+            {
+                if (e.Value != null)
+                {
+                    
+                    if ((double)e.Value > 0)
+                        e.CellStyle.ForeColor = System.Drawing.Color.MediumVioletRed;
+                    else
+                        e.CellStyle.ForeColor = System.Drawing.Color.Green;
+                    
+                }
+            }
+            else if (the_view.Columns[e.ColumnIndex].Name == "BOD PnL")
+            {
+                if (e.Value != null)
+                {
+
+                    if ((double)e.Value > 0)
+                        e.CellStyle.ForeColor = System.Drawing.Color.MediumVioletRed;
+                    else
+                        e.CellStyle.ForeColor = System.Drawing.Color.Green;
+
+                }
+            }
+            else if (e.Value != null)
+            {
+                e.CellStyle.ForeColor = System.Drawing.Color.Yellow;
+            }
+        }
+
+
         private void AddPortfolioTab(string folio_name)
         {
             
@@ -93,14 +142,17 @@ namespace Dashboard
                 dataGridView.ReadOnly = true;
                 dataGridView.Size = new System.Drawing.Size(1210, 550);
                 dataGridView.TabIndex = tab_index;
-              //  dataGridView.AutoGenerateColumns = true;
-           // dataGridView.HorizontalScrollingOffset = 0;
+            dataGridView.CellFormatting +=
+          new System.Windows.Forms.DataGridViewCellFormattingEventHandler(
+          this.dataGridView_CellFormatting);
+
+            dataGridView.RowsDefaultCellStyle.BackColor = System.Drawing.Color.Black;
             
-            dataGridView.RowsDefaultCellStyle.BackColor = System.Drawing.Color.White;
-            
-            dataGridView.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-                LoadFolioPositionsData(dataGridView,folio_name);
-                tab.Controls.Add(dataGridView);
+            dataGridView.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+                
+            DataTable data_table = NewPositionViewDataTable( );
+            dataGridView.DataSource = data_table;
+            tab.Controls.Add(dataGridView);
                 this.tabControl_portfolios.Controls.Add(tab);
 
             
@@ -233,10 +285,10 @@ namespace Dashboard
                                 && (string)tab.Name == pos.PortfolioName)
                             {
                                 DataTable data_source = (DataTable)view.DataSource;
-                              
+
                                 data_source.Rows.Add(pos.Underlying,
-                            0, pos.BODPnL, 0, 0, 0, 0, 0, 0, pos.BeginOfDayQuantity,
-                            pos.BoughtQuantity, pos.BoughtAveragePrice, pos.SoldQuantity, pos.SoldAveragePrice, 1,
+                            0, pos.BODPnL, 0, 0, 0, 0, pos.BeginOfDayQuantity,
+                            pos.BoughtQuantity, pos.BoughtAveragePrice, pos.SoldQuantity, pos.SoldAveragePrice, 0, 0, 0,  1,
                             pos.UnderlyingType, 0, 0, 0);
 
                                 view.DataSource = data_source;
